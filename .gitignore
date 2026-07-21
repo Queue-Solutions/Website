@@ -13,6 +13,9 @@ dist-ssr
 *.local
 .env
 
+# Windows Explorer folder settings
+desktop.ini
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

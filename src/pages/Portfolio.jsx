@@ -35,9 +35,18 @@ export default function Portfolio({ content, setShowForm }) {
       </FocusSection>
 
       <FocusSection trigger="mount" className="bg-slate-950 px-5 pb-14 pt-8 sm:px-6 sm:pb-20 sm:pt-20 md:pb-24 md:pt-24" innerClassName="mx-auto grid max-w-xl gap-5 md:max-w-6xl md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
-          {portfolio.projects.map((project, index) => (
+          {portfolio.projects.map((project, index) => {
+            const Card = project.href ? "a" : "article";
+            const linkProps = project.href
+              ? { href: project.href, target: "_blank", rel: "noreferrer noopener" }
+              : {};
+
+            return (
             <Reveal trigger="mount" key={project.title} className="mx-auto w-full max-w-sm md:max-w-none" delay={index * 0.05}>
-              <article className="group overflow-hidden rounded-[2rem] border border-slate-300/70 bg-slate-100/82 shadow-[0_24px_60px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+              <Card
+                {...linkProps}
+                className={`group block overflow-hidden rounded-[2rem] border border-slate-300/70 bg-slate-100/82 shadow-[0_24px_60px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.12)] ${project.href ? "cursor-pointer" : ""}`}
+              >
                 <div className="relative h-44 overflow-hidden sm:h-72">
                   <img
                     src={project.image}
@@ -64,10 +73,19 @@ export default function Portfolio({ content, setShowForm }) {
                   <div className="rounded-[1.25rem] border border-purple-100 bg-purple-50 px-4 py-3 text-sm font-medium text-slate-700">
                     {resultLabel}: {project.result}
                   </div>
+                  {project.href ? (
+                    <p
+                      className={`text-sm font-semibold text-purple-700 group-hover:underline ${isRtl ? "text-right" : ""}`}
+                      dir="ltr"
+                    >
+                      {project.linkLabel ?? project.href}
+                    </p>
+                  ) : null}
                 </div>
-              </article>
+              </Card>
             </Reveal>
-          ))}
+            );
+          })}
       </FocusSection>
 
       <FocusSection

@@ -235,9 +235,18 @@ export default function Home({ content, navTo, setShowForm }) {
           </Reveal>
 
           <div className="grid gap-5 md:grid-cols-3 xl:gap-8">
-            {portfolioPreview.map((project, index) => (
+            {portfolioPreview.map((project, index) => {
+              const Card = project.href ? "a" : "article";
+              const linkProps = project.href
+                ? { href: project.href, target: "_blank", rel: "noreferrer noopener" }
+                : {};
+
+              return (
               <Reveal key={project.title} delay={index * 0.05}>
-                <article className="group mx-auto w-full max-w-sm overflow-hidden rounded-[2rem] border border-white/10 bg-white/8 shadow-[0_24px_60px_rgba(15,23,42,0.18)] backdrop-blur transition hover:-translate-y-1 hover:bg-white/10 md:max-w-none">
+                <Card
+                  {...linkProps}
+                  className={`group mx-auto block w-full max-w-sm overflow-hidden rounded-[2rem] border border-white/10 bg-white/8 shadow-[0_24px_60px_rgba(15,23,42,0.18)] backdrop-blur transition hover:-translate-y-1 hover:bg-white/10 md:max-w-none ${project.href ? "cursor-pointer" : ""}`}
+                >
                   <div className="relative h-44 overflow-hidden sm:h-56">
                     <img
                       src={project.image}
@@ -261,10 +270,19 @@ export default function Home({ content, navTo, setShowForm }) {
                     <div className="rounded-[1.25rem] border border-white/12 bg-white/8 px-4 py-3 text-sm font-medium text-slate-100">
                       {ui.resultLabel}: {project.result}
                     </div>
+                    {project.href ? (
+                      <p
+                        className={`text-sm font-semibold text-purple-200 group-hover:underline ${isArabic ? "text-right" : ""}`}
+                        dir="ltr"
+                      >
+                        {project.linkLabel ?? project.href}
+                      </p>
+                    ) : null}
                   </div>
-                </article>
+                </Card>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
       </FocusSection>
 
