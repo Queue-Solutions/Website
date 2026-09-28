@@ -1,5 +1,5 @@
 import { motion as Motion } from "framer-motion";
-import { FaArrowRight, FaBrain, FaCogs, FaGlobe } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
@@ -12,7 +12,6 @@ import { trackLeadClick } from "../lib/analytics";
 import { formatPrice } from "../lib/format";
 import { getPathForPageId } from "../lib/routes";
 
-const SERVICE_ICONS = [FaGlobe, FaCogs, FaBrain];
 const FEATURED_IDS = ["glowmia", "egypt-gold-design", "egypt-gold-whatsapp"];
 const PRODUCT_IDS = ["queue-pos", "molarbear"];
 
@@ -73,34 +72,6 @@ export default function Home({ content, navTo, setShowForm }) {
               {ui.viewPortfolio}
             </ActionButton>
           </Motion.div>
-        </div>
-      </section>
-
-      {/* What we do */}
-      <section className="px-5 pb-16 sm:px-6 sm:pb-24">
-        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
-          {home.heroCards.map((card, index) => {
-            const Icon = SERVICE_ICONS[index];
-            return (
-              <Reveal key={card.title} delay={index * 0.05}>
-                <button
-                  type="button"
-                  onClick={() => navTo("services")}
-                  className="group flex h-full w-full flex-col rounded-[1.5rem] border border-slate-200 bg-white/85 p-6 text-start shadow-[0_14px_40px_rgba(15,23,42,0.06)] transition hover:-translate-y-1 hover:border-purple-200 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-lg text-purple-700">
-                    <Icon />
-                  </span>
-                  <h2 className="mt-5 text-xl font-bold text-slate-950">{card.title}</h2>
-                  <p className="mt-2 flex-1 text-[15px] leading-7 text-slate-600">{card.description}</p>
-                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-purple-700">
-                    {ui.ourServices}
-                    <FaArrowRight className="text-xs transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
-                  </span>
-                </button>
-              </Reveal>
-            );
-          })}
         </div>
       </section>
 
