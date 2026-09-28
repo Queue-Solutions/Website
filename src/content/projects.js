@@ -47,7 +47,7 @@ export const PROJECT_META = {
     logo: logo("queue-pos.webp"),
     video: "/videos/queue-pos-demo.mp4",
     poster: shot("queue-pos-poster"),
-    videoOrientation: "portrait",
+    videoOrientation: "landscape",
     gallery: [shot("queue-pos-reports"), shot("queue-pos-branches")],
     platform: "desktop",
     filters: ["desktop"],

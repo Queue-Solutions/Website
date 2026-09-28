@@ -2,7 +2,7 @@
 // Ready-made products: pricing plans and the copy for their SEO landing pages.
 
 export const LANDING_PAGES = {
-  "restaurant-pos-egypt": { productId: "queue-pos", video: "/videos/queue-pos-demo.mp4", poster: "/case-studies/queue-pos-poster.webp", videoOrientation: "portrait" },
+  "restaurant-pos-egypt": { productId: "queue-pos", video: "/videos/queue-pos-demo.mp4", poster: "/case-studies/queue-pos-poster.webp", videoOrientation: "landscape" },
   "dental-clinic-software-egypt": { productId: "molarbear", video: "/videos/molarbear-demo.mp4", poster: "/case-studies/molarbear-poster.webp", videoOrientation: "landscape" },
 };
 
@@ -31,7 +31,7 @@ export const PRODUCT_COPY = {
       description:
         "Queue POS handles the cashier, the kitchen, the stock, the staff, and the reports in one Windows app, in Arabic and English. Pay once and it is yours.",
       priceNote: "One-time payment · lifetime licence",
-      videoTitle: "See Queue POS in 30 seconds",
+      videoTitle: "A 90-second tour of Queue POS",
       featuresTitle: "Everything a restaurant needs, already built in",
       features: [
         { title: "Fast table-based POS", text: "Tap a table, add items, split the bill, take cash, card, or wallet, and print an 80mm or 58mm receipt." },
@@ -123,7 +123,7 @@ export const PRODUCT_COPY = {
       description:
         "يدير Queue POS الكاشير والمطبخ والمخزون والموظفين والتقارير من برنامج ويندوز واحد، بالعربية والإنجليزية. تدفع مرة واحدة ويصبح ملكك.",
       priceNote: "دفعة واحدة · ترخيص مدى الحياة",
-      videoTitle: "شاهد Queue POS في 30 ثانية",
+      videoTitle: "جولة في Queue POS خلال 90 ثانية",
       featuresTitle: "كل ما يحتاجه المطعم، جاهز من اليوم الأول",
       features: [
         { title: "كاشير سريع حسب الطاولات", text: "اختر الطاولة وأضف الأصناف وقسّم الفاتورة واستلم نقدًا أو بطاقة أو محفظة، واطبع إيصالًا حراريًا." },
