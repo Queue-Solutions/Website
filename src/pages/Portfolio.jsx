@@ -65,7 +65,7 @@ export default function Portfolio({ content, setShowForm }) {
           </Reveal>
       </FocusSection>
 
-      <section className="bg-slate-950 px-5 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 md:pb-24">
+      <section className="px-5 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 md:pb-24">
         <Motion.div layout className="mx-auto grid max-w-md gap-6 md:max-w-6xl md:grid-cols-2 xl:grid-cols-3 xl:gap-7">
           <AnimatePresence mode="popLayout">
             {visibleProjects.map((project) => (

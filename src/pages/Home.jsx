@@ -6,8 +6,10 @@ import ActionButton from "../components/ui/ActionButton";
 import AuditBanner from "../components/ui/AuditBanner";
 import ProjectCard from "../components/ui/ProjectCard";
 import ProjectLogoStage from "../components/ui/ProjectLogoStage";
+import Testimonials from "../components/ui/Testimonials";
 import Reveal from "../components/ui/Reveal";
 import { PRICING } from "../content/products";
+import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
 import { formatPrice } from "../lib/format";
 import { getPathForPageId } from "../lib/routes";
@@ -32,6 +34,7 @@ export default function Home({ content, navTo, setShowForm }) {
   const { home, portfolio, process, ui, locale } = content;
   const featured = FEATURED_IDS.map((id) => portfolio.projects.find((project) => project.id === id));
   const products = PRODUCT_IDS.map((id) => portfolio.projects.find((project) => project.id === id));
+  const testimonials = getTestimonials(locale);
 
   return (
     <PageShell>
@@ -76,13 +79,13 @@ export default function Home({ content, navTo, setShowForm }) {
       </section>
 
       {/* Featured work */}
-      <section className="bg-slate-950 px-5 py-16 sm:px-6 sm:py-24">
+      <section className="border-t border-slate-200/70 px-5 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-6xl space-y-10">
           <Reveal>
             <div className="flex flex-col gap-5 text-start md:flex-row md:items-end md:justify-between">
               <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-300">{portfolio.hero.eyebrow}</p>
-                <h2 className="mt-3 text-[1.75rem] font-bold leading-tight text-white sm:text-4xl">{portfolio.hero.title}</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-700">{portfolio.hero.eyebrow}</p>
+                <h2 className="mt-3 text-[1.75rem] font-bold leading-tight text-slate-950 sm:text-4xl">{portfolio.hero.title}</h2>
               </div>
               <ActionButton onClick={() => navTo("portfolio")} variant="secondary" className="w-full justify-center md:w-auto">
                 {ui.viewPortfolio}
@@ -161,6 +164,15 @@ export default function Home({ content, navTo, setShowForm }) {
           </div>
         </div>
       </section>
+
+      {/* Client testimonials: hidden until at least one is approved in content/testimonials.js */}
+      {testimonials.length ? (
+        <section className="px-5 pb-16 sm:px-6 sm:pb-24">
+          <Reveal>
+            <Testimonials items={testimonials} title={ui.testimonialsTitle} />
+          </Reveal>
+        </section>
+      ) : null}
 
       {/* How we work */}
       <section className="border-y border-slate-200/70 bg-white/60 px-5 py-16 sm:px-6 sm:py-24">
