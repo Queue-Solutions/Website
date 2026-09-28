@@ -12,7 +12,7 @@ export default function Contact({ content, setShowForm }) {
   const site = content.siteDetails;
   const locale = content.locale;
   const whatsappHref = site.whatsappHref ?? "https://wa.me/201127435060";
-  const whatsappTitle = ui.contactCards.whatsappTitle ?? (locale === "ar" ? "واتساب" : "WhatsApp");
+  const cards = ui.contactCards;
 
   return (
     <PageShell>
@@ -41,27 +41,27 @@ export default function Contact({ content, setShowForm }) {
               <ContactCard
                 className="sm:min-h-[13.75rem]"
                 icon={<FaEnvelope />}
-                eyebrow={locale === "ar" ? "رد سريع" : "Fast Reply"}
+                eyebrow={cards.emailEyebrow}
                 tone="email"
                 title={ui.contactCards.emailTitle}
                 body={site.email}
-                ctaLabel={locale === "ar" ? "أرسل بريدًا" : "Send Email"}
+                ctaLabel={cards.emailAction}
                 href={`mailto:${site.email}`}
               />
               <ContactCard
                 className="sm:min-h-[13.75rem]"
                 icon={<FaWhatsapp />}
-                eyebrow={locale === "ar" ? "متاح الآن" : "Available Now"}
+                eyebrow={cards.whatsappEyebrow}
                 tone="whatsapp"
-                title={whatsappTitle}
-                body={locale === "ar" ? "تواصل معنا مباشرة على واتساب." : "Chat with us directly on WhatsApp."}
+                title={cards.whatsappTitle}
+                body={cards.whatsappBody}
                 href={whatsappHref}
                 rel="noreferrer"
                 target="_blank"
               />
               <ContactCard
                 icon={<FaPaperPlane />}
-                eyebrow={locale === "ar" ? "ابدأ بوضوح" : "Project Brief"}
+                eyebrow={cards.formEyebrow}
                 tone="form"
                 title={ui.contactCards.formTitle}
                 body={ui.contactCards.formBody}
@@ -97,7 +97,7 @@ export default function Contact({ content, setShowForm }) {
                   className="flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-4 text-slate-100 backdrop-blur"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-400/18 text-purple-200">
-                    <FaArrowRight className="text-sm" />
+                    <FaArrowRight className="text-sm rtl:rotate-180" />
                   </span>
                   <span className="leading-6">{item}</span>
                 </div>
@@ -106,7 +106,7 @@ export default function Contact({ content, setShowForm }) {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <SocialPill href={whatsappHref} icon={<FaWhatsapp />}>
-                {whatsappTitle}
+                {cards.whatsappTitle}
               </SocialPill>
               {content.socialLinks.map((link) => (
                 <SocialPill key={link.id} href={link.href} icon={link.id === "instagram" ? <FaInstagram /> : <FaFacebookF />}>
@@ -165,7 +165,7 @@ function ContactCard({ body, className = "", ctaLabel, eyebrow, href, icon, onCl
     },
   };
   const theme = toneClasses[tone] ?? toneClasses.email;
-  const baseClassName = `group relative mx-auto flex min-h-[13.75rem] w-full flex-col overflow-hidden rounded-[1.5rem] border p-5 text-left backdrop-blur transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 sm:max-w-none sm:p-6 ${theme.panel}`.trim();
+  const baseClassName = `group relative mx-auto flex min-h-[13.75rem] w-full flex-col overflow-hidden rounded-[1.5rem] border p-5 text-start backdrop-blur transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 sm:max-w-none sm:p-6 ${theme.panel}`.trim();
 
   const content = (
     <>
@@ -189,7 +189,7 @@ function ContactCard({ body, className = "", ctaLabel, eyebrow, href, icon, onCl
         <div className={`mt-auto pt-5 text-sm font-semibold ${theme.cta}`}>
           <span className="inline-flex items-center gap-2">
             {ctaLabel}
-            <FaArrowRight className="text-xs transition-transform duration-200 group-hover:translate-x-0.5" />
+            <FaArrowRight className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 rtl:rotate-180" />
           </span>
         </div>
       ) : null}

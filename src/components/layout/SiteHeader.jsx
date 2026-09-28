@@ -42,7 +42,7 @@ export default function SiteHeader({
       >
         <div className="flex items-center justify-between gap-2 px-2.5 py-2.5 sm:px-4 sm:py-3 lg:px-6">
           <Link
-            to="/"
+            to={getPathForPageId("home", locale)}
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center justify-center rounded-full px-1 py-1 transition hover:bg-slate-50"
           >
@@ -51,12 +51,12 @@ export default function SiteHeader({
             </div>
           </Link>
 
-          <nav className={`hidden items-center gap-2 md:flex ${isRtl ? "flex-row-reverse" : ""}`}>
+          <nav className={"hidden items-center gap-2 md:flex"}>
             {content.navItems.map((item) => {
               return (
                 <NavLink
                   key={item.id}
-                  to={getPathForPageId(item.id)}
+                  to={getPathForPageId(item.id, locale)}
                   end={item.id === "home"}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
@@ -91,7 +91,7 @@ export default function SiteHeader({
             })}
           </nav>
 
-          <div className={`hidden items-center gap-3 md:flex ${isRtl ? "flex-row-reverse" : ""}`}>
+          <div className={"hidden items-center gap-3 md:flex"}>
             <LanguageToggleButton compact label={languageLabel} onClick={() => onLocaleChange(nextLocale)} />
             <ActionButton className={headerPrimaryButtonClassName} onClick={openProjectForm} variant="secondary">
               {content.ui.startProject}
@@ -134,7 +134,7 @@ export default function SiteHeader({
               >
                 <nav className="grid gap-2">
                   {content.navItems.map((item) => {
-                    const itemPath = getPathForPageId(item.id);
+                    const itemPath = getPathForPageId(item.id, locale);
 
                     return (
                       <NavLink
@@ -143,7 +143,7 @@ export default function SiteHeader({
                         end={item.id === "home"}
                         onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
-                          `rounded-2xl px-4 py-3 text-[15px] font-medium leading-[1.5] transition ${isRtl ? "text-right" : "text-left"} ${
+                          `rounded-2xl px-4 py-3 text-[15px] font-medium leading-[1.5] transition text-start ${
                             isActive ? "bg-slate-950 text-white" : "bg-white text-slate-700 hover:bg-slate-50"
                           }`
                         }

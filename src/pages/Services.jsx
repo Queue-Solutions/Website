@@ -17,27 +17,6 @@ const iconMap = {
   mobile: FaMobileAlt,
 };
 
-const automationMobilePreviewTitles = [
-  "Instant lead replies",
-  "No-chase follow-up",
-  "Smart request routing",
-  "More time back",
-];
-
-const callAgentMobilePreviewTitles = [
-  "Calls answered fast",
-  "Clear service intro",
-  "Lead details captured",
-  "Stronger first impression",
-];
-
-const reasonsMobilePreviewTitles = [
-  "Business-first thinking",
-  "Easy to trust",
-  "Useful technology",
-  "One connected process",
-];
-
 export default function Services({ content, navTo }) {
   const servicesContent = content.services;
   const ui = content.ui;
@@ -138,7 +117,7 @@ export default function Services({ content, navTo }) {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="mt-4 text-[1rem] font-bold leading-[1.2] text-white">
-                    {automationMobilePreviewTitles[index] ?? point.title}
+                    {servicesContent.automationHighlight.mobilePointTitles?.[index] ?? point.title}
                   </h3>
                 </div>
               ))}
@@ -176,7 +155,7 @@ export default function Services({ content, navTo }) {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="mt-4 text-[1rem] font-bold leading-[1.2] text-slate-950">
-                    {callAgentMobilePreviewTitles[index] ?? point.title}
+                    {servicesContent.callAgentHighlight.mobilePointTitles?.[index] ?? point.title}
                   </h3>
                 </div>
               ))}
@@ -272,10 +251,11 @@ export default function Services({ content, navTo }) {
                       <img
                         src={service.image}
                         alt={service.title}
+                        loading="lazy"
                         className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
-                      <div className="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50/92 text-purple-700 shadow-lg">
+                      <div className="absolute start-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50/92 text-purple-700 shadow-lg">
                         <Icon />
                       </div>
                     </div>
@@ -283,7 +263,7 @@ export default function Services({ content, navTo }) {
                     <div className="space-y-4 p-5 sm:p-7">
                       <div className="flex items-center justify-between">
                         <h3 className="text-[1.35rem] font-bold leading-tight text-slate-950 sm:text-2xl">{service.title}</h3>
-                        <FaArrowRight className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-purple-600" />
+                        <FaArrowRight className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-purple-600 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
                       </div>
                       <ExpandableText
                         className="text-[15px] leading-6 text-slate-600 sm:text-base sm:leading-7"
@@ -327,7 +307,7 @@ export default function Services({ content, navTo }) {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h4 className="mt-4 text-[1rem] font-bold leading-[1.2] text-slate-950">
-                    {reasonsMobilePreviewTitles[index] ?? item.title}
+                    {servicesContent.reasonsMobileTitles?.[index] ?? item.title}
                   </h4>
                 </div>
             ))}

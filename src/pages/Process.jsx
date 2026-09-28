@@ -79,19 +79,19 @@ export default function Process({ content, setShowForm }) {
                         index === 0 || index === process.steps.length - 1 ? "shadow-[0_18px_40px_rgba(15,23,42,0.06)]" : ""
                       }`}
                     >
-                      <div className={`flex items-center gap-3 ${isArabic ? "flex-row-reverse" : ""}`}>
+                      <div className={"flex items-center gap-3"}>
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 via-violet-500 to-fuchsia-500 text-sm font-bold text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)]">
                           {step.num}
                         </div>
-                        <div className={`min-w-0 ${isArabic ? "text-right" : "text-left"}`}>
+                        <div className={"min-w-0 text-start"}>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-                            {locale === "ar" ? "المرحلة" : "Phase"}
+                            {ui.phase}
                           </p>
                           <p className="mt-1 text-sm font-semibold text-slate-950 sm:text-base">{step.title}</p>
                         </div>
                       </div>
                       {index < process.steps.length - 1 ? (
-                        <div className="pointer-events-none absolute inset-y-1/2 -right-5 hidden h-px w-10 -translate-y-1/2 bg-gradient-to-r from-purple-300 via-violet-300 to-sky-300 md:block" />
+                        <div className="pointer-events-none absolute inset-y-1/2 -end-5 hidden h-px w-10 -translate-y-1/2 bg-gradient-to-r from-purple-300 via-violet-300 to-sky-300 md:block" />
                       ) : null}
                     </div>
                   ))}
@@ -115,14 +115,14 @@ export default function Process({ content, setShowForm }) {
                       <div className="absolute -right-10 top-6 h-24 w-24 rounded-full bg-purple-400/10 blur-3xl" />
                       <div className="absolute bottom-0 left-0 h-28 w-28 rounded-full bg-sky-300/10 blur-3xl" />
 
-                      <div className={`relative flex items-start justify-between gap-4 ${isArabic ? "flex-row-reverse" : ""}`}>
-                        <div className={`flex items-center gap-4 ${isArabic ? "flex-row-reverse" : ""}`}>
+                      <div className={"relative flex items-start justify-between gap-4"}>
+                        <div className={"flex items-center gap-4"}>
                           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-purple-600 via-violet-500 to-fuchsia-500 text-xl font-bold text-white shadow-[0_18px_35px_rgba(124,58,237,0.28)]">
                             {step.num}
                           </div>
                           <div className="min-w-0">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
-                              {locale === "ar" ? `المرحلة ${step.num}` : `Stage ${step.num}`}
+                              {`${ui.stage} ${step.num}`}
                             </p>
                             <h3 className="mt-2 text-[1.55rem] font-bold leading-tight text-slate-950 sm:text-[1.9rem]">
                               {step.title}
@@ -144,19 +144,19 @@ export default function Process({ content, setShowForm }) {
                         />
                       </div>
 
-                      <div className={`relative mt-6 flex items-center justify-between gap-4 border-t border-slate-200/80 pt-5 ${isArabic ? "flex-row-reverse" : ""}`}>
+                      <div className={"relative mt-6 flex items-center justify-between gap-4 border-t border-slate-200/80 pt-5"}>
                         <div className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                          {locale === "ar" ? `الخطوة ${index + 1} من ${process.steps.length}` : `Step ${index + 1} of ${process.steps.length}`}
+                          {`${ui.step} ${index + 1} ${ui.of} ${process.steps.length}`}
                         </div>
                         {nextStep ? (
-                          <div className={`flex items-center gap-2 text-sm font-medium text-slate-500 ${isArabic ? "flex-row-reverse" : ""}`}>
-                            <span>{locale === "ar" ? "التالي" : "Next"}</span>
+                          <div className={"flex items-center gap-2 text-sm font-medium text-slate-500"}>
+                            <span>{ui.next}</span>
                             <FaArrowRight className={`text-xs text-purple-500 ${isArabic ? "rotate-180" : ""}`} />
                             <span className="text-slate-700">{nextStep.title}</span>
                           </div>
                         ) : (
                           <div className="text-sm font-medium text-purple-700">
-                            {locale === "ar" ? "جاهز للإطلاق" : "Ready to launch"}
+                            {ui.readyToLaunch}
                           </div>
                         )}
                       </div>

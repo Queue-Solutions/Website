@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { absoluteUrl, buildPath, OG_IMAGE, SEO } from "../../content/seo";
 import { getAbsoluteUrl } from "../../lib/routes";
 
 const GA_MEASUREMENT_ID = "G-19YFREF1C7";
@@ -30,45 +31,12 @@ function upsertLink(selector, attributes) {
   });
 }
 
-function buildSeoByPageId(content) {
-  const siteName = content.siteDetails.name;
-  const defaultDescription = content.siteDetails.description;
-
-  return {
-    home: {
-      title: `${siteName} | Web Development & AI Solutions`,
-      description: defaultDescription,
-      canonicalPath: "/",
-    },
-    services: {
-      title: `Services | ${siteName}`,
-      description: content.services.hero.description ?? defaultDescription,
-      canonicalPath: "/services",
-    },
-    portfolio: {
-      title: `Portfolio | ${siteName}`,
-      description: content.portfolio.hero.description ?? defaultDescription,
-      canonicalPath: "/portfolio",
-    },
-    process: {
-      title: `Our Process | ${siteName}`,
-      description: content.process.hero.description ?? defaultDescription,
-      canonicalPath: "/process",
-    },
-    contact: {
-      title: `Contact Us | ${siteName}`,
-      description: content.contact.hero.description ?? defaultDescription,
-      canonicalPath: "/contact",
-    },
-  };
-}
-
 export default function RouteSeo({ content, pageId }) {
   const location = useLocation();
   const trackedInitialView = useRef(false);
-  const seoByPageId = useMemo(() => buildSeoByPageId(content), [content]);
-  const seo = seoByPageId[pageId] ?? seoByPageId.home;
-  const canonicalUrl = getAbsoluteUrl(seo.canonicalPath);
+  const locale = content.locale;
+  const seo = useMemo(() => SEO[locale][pageId] ?? SEO[locale].home, [locale, pageId]);
+  const canonicalUrl = absoluteUrl(buildPath(pageId, locale));
   const pageLocation = getAbsoluteUrl(`${location.pathname}${location.search}${location.hash}`);
 
   useEffect(() => {
@@ -106,11 +74,23 @@ export default function RouteSeo({ content, pageId }) {
       name: "twitter:description",
       content: seo.description,
     });
+    upsertMeta('meta[property="og:locale"]', {
+      property: "og:locale",
+      content: locale === "ar" ? "ar_EG" : "en_US",
+    });
+    upsertMeta('meta[property="og:image"]', { property: "og:image", content: OG_IMAGE });
     upsertLink('link[rel="canonical"]', {
       rel: "canonical",
       href: canonicalUrl,
     });
-  }, [canonicalUrl, content.siteDetails.name, seo.description, seo.title]);
+    [
+      ["en", buildPath(pageId, "en")],
+      ["ar", buildPath(pageId, "ar")],
+      ["x-default", buildPath(pageId, "en")],
+    ].forEach(([hreflang, path]) => {
+      upsertLink(`link[rel="alternate"][hreflang="${hreflang}"]`, { rel: "alternate", hreflang, href: absoluteUrl(path) });
+    });
+  }, [canonicalUrl, content.siteDetails.name, locale, pageId, seo.description, seo.title]);
 
   useEffect(() => {
     if (!trackedInitialView.current) {

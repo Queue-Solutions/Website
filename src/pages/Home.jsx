@@ -1,10 +1,10 @@
-import { motion as Motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { useState } from "react";
+import { motion as Motion } from "framer-motion";
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
 import AnimatedImage from "../components/ui/AnimatedImage";
 import ExpandableText from "../components/ui/ExpandableText";
 import FocusSection from "../components/ui/FocusSection";
+import ProjectCard from "../components/ui/ProjectCard";
 import Reveal from "../components/ui/Reveal";
 import SectionHeading from "../components/ui/SectionHeading";
 
@@ -16,15 +16,8 @@ export default function Home({ content, navTo, setShowForm }) {
   const ui = content.ui;
   const locale = content.locale;
   const isArabic = locale === "ar";
-  const portfolioPreview = portfolio.projects.slice(0, 3);
-  const [showHeroLabels, setShowHeroLabels] = useState(() => (typeof window !== "undefined" ? window.scrollY > 24 : false));
-  const { scrollY } = useScroll();
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (latest > 24) {
-      setShowHeroLabels(true);
-    }
-  });
+  const featuredIds = ["glowmia", "egypt-gold-design", "queue-pos"];
+  const portfolioPreview = featuredIds.map((id) => portfolio.projects.find((project) => project.id === id)).filter(Boolean);
 
   return (
     <PageShell>
@@ -34,6 +27,15 @@ export default function Home({ content, navTo, setShowForm }) {
       >
         <Reveal className="mx-auto flex min-h-[calc(100svh-8rem)] w-full flex-col justify-between sm:min-h-[calc(100svh-9rem)] sm:justify-start sm:gap-0">
             <div className="flex flex-1 flex-col items-center justify-center">
+              <Motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex max-w-[20rem] items-center gap-2 rounded-full border border-purple-200 bg-white/80 px-4 py-2 text-xs font-medium text-purple-700 shadow-[0_12px_30px_rgba(168,85,247,0.12)] backdrop-blur sm:max-w-none sm:text-sm"
+              >
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                {home.heroBadge}
+              </Motion.p>
               <Motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -67,45 +69,40 @@ export default function Home({ content, navTo, setShowForm }) {
               </Motion.p>
 
               <Motion.div
-                initial={false}
-                animate={{
-                  opacity: showHeroLabels ? 1 : 0,
-                  y: showHeroLabels ? 0 : 22,
-                }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className={`mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5 ${
-                  showHeroLabels ? "pointer-events-auto" : "pointer-events-none"
-                }`}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4"
               >
                 <ActionButton onClick={() => setShowForm(true)} className="w-full justify-center px-7 sm:w-auto">
                   {ui.startProject}
                 </ActionButton>
-                <button
-                  type="button"
-                  onClick={() => navTo("services")}
-                  className="text-sm font-semibold text-slate-700 transition hover:text-purple-700"
-                >
-                  {ui.ourServices}
-                </button>
+                <ActionButton onClick={() => navTo("portfolio")} variant="secondary" className="w-full justify-center px-7 sm:w-auto">
+                  {ui.viewPortfolio}
+                </ActionButton>
               </Motion.div>
             </div>
 
             <Motion.div
-              initial={false}
-              animate={{
-                opacity: showHeroLabels ? 1 : 0,
-                y: showHeroLabels ? 0 : 26,
-              }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className={`mt-10 grid grid-cols-1 gap-3 border-t border-slate-300/60 pt-5 text-center transition-opacity sm:grid-cols-3 sm:gap-4 sm:pt-6 ${
-                showHeroLabels ? "pointer-events-auto" : "pointer-events-none"
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-10 border-t border-slate-300/60 pt-5 sm:pt-6"
             >
-              {home.heroCards.map((card) => (
-                <div key={card.title} className="text-[10px] font-semibold uppercase tracking-[0.28em] text-slate-500 sm:text-sm sm:tracking-[0.32em]">
-                  {card.title}
-                </div>
-              ))}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-xs">{ui.trustedBy}</p>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+                {portfolio.projects.map((project) => (
+                  <button
+                    key={project.id}
+                    type="button"
+                    onClick={() => navTo("portfolio")}
+                    className="group flex items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white/70 py-1.5 pe-3.5 ps-1.5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:bg-white"
+                  >
+                    <img src={project.logo} alt="" className="h-8 w-8 rounded-xl object-cover grayscale transition group-hover:grayscale-0 sm:h-9 sm:w-9" loading="lazy" width="36" height="36" />
+                    <span className="text-xs font-semibold text-slate-600 group-hover:text-slate-950 sm:text-sm" dir="ltr">{project.title}</span>
+                  </button>
+                ))}
+              </div>
             </Motion.div>
           </Reveal>
       </FocusSection>
@@ -234,55 +231,12 @@ export default function Home({ content, navTo, setShowForm }) {
             </div>
           </Reveal>
 
-          <div className="grid gap-5 md:grid-cols-3 xl:gap-8">
-            {portfolioPreview.map((project, index) => {
-              const Card = project.href ? "a" : "article";
-              const linkProps = project.href
-                ? { href: project.href, target: "_blank", rel: "noreferrer noopener" }
-                : {};
-
-              return (
-              <Reveal key={project.title} delay={index * 0.05}>
-                <Card
-                  {...linkProps}
-                  className={`group mx-auto block w-full max-w-sm overflow-hidden rounded-[2rem] border border-white/10 bg-white/8 shadow-[0_24px_60px_rgba(15,23,42,0.18)] backdrop-blur transition hover:-translate-y-1 hover:bg-white/10 md:max-w-none ${project.href ? "cursor-pointer" : ""}`}
-                >
-                  <div className="relative h-44 overflow-hidden sm:h-56">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                    <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-slate-50/92 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-purple-700">
-                      {project.category}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 p-5 sm:p-6">
-                    <h3 className="text-[1.25rem] font-bold leading-tight text-white sm:text-[1.45rem]">{project.title}</h3>
-                    <ExpandableText
-                      className="text-[15px] leading-6 text-slate-300 sm:text-base sm:leading-7"
-                      locale={locale}
-                      mobileWords={7}
-                      text={project.description}
-                    />
-                    <div className="rounded-[1.25rem] border border-white/12 bg-white/8 px-4 py-3 text-sm font-medium text-slate-100">
-                      {ui.resultLabel}: {project.result}
-                    </div>
-                    {project.href ? (
-                      <p
-                        className={`text-sm font-semibold text-purple-200 group-hover:underline ${isArabic ? "text-right" : ""}`}
-                        dir="ltr"
-                      >
-                        {project.linkLabel ?? project.href}
-                      </p>
-                    ) : null}
-                  </div>
-                </Card>
+          <div className="grid gap-6 md:grid-cols-3 xl:gap-7">
+            {portfolioPreview.map((project, index) => (
+              <Reveal key={project.id} delay={index * 0.05} className="mx-auto w-full max-w-md md:max-w-none">
+                <ProjectCard index={portfolio.projects.indexOf(project)} project={project} setShowForm={setShowForm} ui={ui} />
               </Reveal>
-              );
-            })}
+            ))}
           </div>
       </FocusSection>
 

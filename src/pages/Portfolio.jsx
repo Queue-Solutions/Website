@@ -1,22 +1,27 @@
-import { FaArrowRight } from "react-icons/fa";
+import { AnimatePresence, motion as Motion } from "framer-motion";
+import { useState } from "react";
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
 import AnimatedImage from "../components/ui/AnimatedImage";
 import ExpandableText from "../components/ui/ExpandableText";
 import FocusSection from "../components/ui/FocusSection";
+import ProjectCard from "../components/ui/ProjectCard";
 import Reveal from "../components/ui/Reveal";
 import SectionHeading from "../components/ui/SectionHeading";
+
+const FILTER_IDS = ["all", "web", "desktop", "ai"];
 
 export default function Portfolio({ content, setShowForm }) {
   const portfolio = content.portfolio;
   const ui = content.ui;
-  const isRtl = content.direction === "rtl";
   const locale = content.locale;
-  const resultLabel = ui.resultLabel ?? (locale === "ar" ? "\u0627\u0644\u0646\u062A\u064A\u062C\u0629" : "Result");
+  const [filter, setFilter] = useState("all");
+  const visibleProjects =
+    filter === "all" ? portfolio.projects : portfolio.projects.filter((project) => project.filters.includes(filter));
 
   return (
     <PageShell>
-      <FocusSection trigger="mount" className="border-y border-slate-300/50 bg-slate-100/58 px-5 pb-8 pt-8 sm:px-6 sm:pb-16 sm:pt-16 md:pb-20 md:pt-20" innerClassName="mx-auto max-w-xl space-y-4 text-center md:max-w-6xl md:space-y-8">
+      <FocusSection trigger="mount" className="border-y border-slate-300/50 bg-slate-100/58 px-5 pb-8 pt-8 sm:px-6 sm:pb-14 sm:pt-16 md:pt-20" innerClassName="mx-auto max-w-xl space-y-4 text-center md:max-w-6xl md:space-y-8">
           <Reveal trigger="mount">
             <div className="inline-flex rounded-full border border-purple-200 bg-slate-50/90 px-4 py-2 text-sm font-medium text-purple-700 shadow-[0_12px_30px_rgba(168,85,247,0.12)] backdrop-blur">
               {portfolio.hero.eyebrow}
@@ -32,61 +37,57 @@ export default function Portfolio({ content, setShowForm }) {
               description={portfolio.hero.description}
             />
           </Reveal>
+          <Reveal trigger="mount" delay={0.12}>
+            <div role="tablist" className="mx-auto flex max-w-full flex-wrap justify-center gap-2">
+              {FILTER_IDS.map((id) => {
+                const count = id === "all" ? portfolio.projects.length : portfolio.projects.filter((p) => p.filters.includes(id)).length;
+                const active = filter === id;
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setFilter(id)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                      active
+                        ? "border-slate-950 bg-slate-950 text-white shadow-[0_12px_30px_rgba(15,23,42,0.18)]"
+                        : "border-slate-300/80 bg-white/80 text-slate-600 hover:border-purple-300 hover:text-purple-700"
+                    }`}
+                  >
+                    {ui.filters[id]}
+                    <span className={`rounded-full px-1.5 text-[11px] ${active ? "bg-white/20" : "bg-slate-100 text-slate-500"}`}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </Reveal>
       </FocusSection>
 
-      <FocusSection trigger="mount" className="bg-slate-950 px-5 pb-14 pt-8 sm:px-6 sm:pb-20 sm:pt-20 md:pb-24 md:pt-24" innerClassName="mx-auto grid max-w-xl gap-5 md:max-w-6xl md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
-          {portfolio.projects.map((project, index) => {
-            const Card = project.href ? "a" : "article";
-            const linkProps = project.href
-              ? { href: project.href, target: "_blank", rel: "noreferrer noopener" }
-              : {};
-
-            return (
-            <Reveal trigger="mount" key={project.title} className="mx-auto w-full max-w-sm md:max-w-none" delay={index * 0.05}>
-              <Card
-                {...linkProps}
-                className={`group block overflow-hidden rounded-[2rem] border border-slate-300/70 bg-slate-100/82 shadow-[0_24px_60px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.12)] ${project.href ? "cursor-pointer" : ""}`}
+      <section className="bg-slate-950 px-5 pb-14 pt-10 sm:px-6 sm:pb-20 sm:pt-16 md:pb-24">
+        <Motion.div layout className="mx-auto grid max-w-md gap-6 md:max-w-6xl md:grid-cols-2 xl:grid-cols-3 xl:gap-7">
+          <AnimatePresence mode="popLayout">
+            {visibleProjects.map((project) => (
+              <Motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="relative h-44 overflow-hidden sm:h-72">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-                  <div className={`absolute top-5 rounded-full border border-slate-100/70 bg-slate-50/92 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-purple-700 ${isRtl ? "right-5" : "left-5"}`}>
-                    {project.category}
-                  </div>
-                </div>
-
-                <div className="space-y-4 p-5 sm:p-7">
-                  <div className={`flex items-start gap-4 ${isRtl ? "flex-row-reverse justify-between" : "justify-between"}`}>
-                    <h3 className="text-[1.35rem] font-bold leading-tight text-slate-950 sm:text-2xl">{project.title}</h3>
-                    <FaArrowRight className="mt-1 shrink-0 text-slate-300 transition group-hover:translate-x-1 group-hover:text-purple-600" />
-                  </div>
-                  <ExpandableText
-                    className="text-[15px] leading-6 text-slate-600 sm:text-base sm:leading-7"
-                    locale={locale}
-                    mobileWords={6}
-                    text={project.description}
-                  />
-                  <div className="rounded-[1.25rem] border border-purple-100 bg-purple-50 px-4 py-3 text-sm font-medium text-slate-700">
-                    {resultLabel}: {project.result}
-                  </div>
-                  {project.href ? (
-                    <p
-                      className={`text-sm font-semibold text-purple-700 group-hover:underline ${isRtl ? "text-right" : ""}`}
-                      dir="ltr"
-                    >
-                      {project.linkLabel ?? project.href}
-                    </p>
-                  ) : null}
-                </div>
-              </Card>
-            </Reveal>
-            );
-          })}
-      </FocusSection>
+                <ProjectCard
+                  index={portfolio.projects.indexOf(project)}
+                  project={project}
+                  setShowForm={setShowForm}
+                  ui={ui}
+                />
+              </Motion.div>
+            ))}
+          </AnimatePresence>
+        </Motion.div>
+      </section>
 
       <FocusSection
         trigger="mount"

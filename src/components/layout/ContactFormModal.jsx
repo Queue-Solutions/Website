@@ -15,7 +15,7 @@ import ActionButton from "../ui/ActionButton";
 const inputClassName =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 transition focus:border-purple-500/50 focus:outline-none";
 
-export default function ContactFormModal({ content, setShowForm }) {
+export default function ContactFormModal({ content, initialIdea = "", setShowForm }) {
   const [formData, setFormData] = useState({
     name: "",
     businessName: "",
@@ -23,7 +23,7 @@ export default function ContactFormModal({ content, setShowForm }) {
     phoneCountry: "EG",
     phone: "",
     whatsapp: "",
-    idea: "",
+    idea: initialIdea,
   });
   const [submitState, setSubmitState] = useState("idle");
   const [showWhatsappError, setShowWhatsappError] = useState(false);

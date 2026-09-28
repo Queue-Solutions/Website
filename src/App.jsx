@@ -1,14 +1,15 @@
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { startTransition, useEffect, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Navigate, useLocation, useNavigate } from "react-router-dom";
 import ContactFormModal from "./components/layout/ContactFormModal";
 import ScrollManager from "./components/routing/ScrollManager";
 import RouteSeo from "./components/seo/RouteSeo";
 import ScrollToTopButton from "./components/layout/ScrollToTopButton";
+import WhatsAppButton from "./components/layout/WhatsAppButton";
 import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
 import { SITE_CONTENT } from "./content/siteContent";
-import { getPageIdForPath, getPathForPageId } from "./lib/routes";
+import { getPathForPageId, getRouteForPath } from "./lib/routes";
 import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
@@ -23,27 +24,31 @@ export default function App() {
   );
 }
 
+const PAGES = { home: Home, services: Services, portfolio: Portfolio, process: Process, contact: Contact };
+
 function AppShell() {
+  // false = closed, true = open, string = open with this text prefilled (e.g. a demo request).
   const [showForm, setShowForm] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [locale, setLocale] = useState("en");
   const [localeFxKey, setLocaleFxKey] = useState(0);
   const [localeFxDirection, setLocaleFxDirection] = useState(1);
   const location = useLocation();
   const navigate = useNavigate();
+  const { locale, pageId } = getRouteForPath(location.pathname);
+  const currentPage = pageId ?? "home";
   const content = SITE_CONTENT[locale];
   const isRtl = content.direction === "rtl";
-  const currentPage = getPageIdForPath(location.pathname);
+  const Page = PAGES[currentPage];
 
   useEffect(() => {
-    document.documentElement.lang = locale === "ar" ? "ar-EG" : "en-US";
+    document.documentElement.lang = locale === "ar" ? "ar-EG" : "en";
     document.documentElement.dir = content.direction;
     document.body.dir = content.direction;
   }, [content.direction, locale]);
 
   const navTo = (page) => {
     setMobileMenuOpen(false);
-    navigate(getPathForPageId(page));
+    navigate(getPathForPageId(page, locale));
   };
 
   const handleLocaleChange = (nextLocale) => {
@@ -55,14 +60,18 @@ function AppShell() {
     setLocaleFxDirection(nextLocale === "ar" ? 1 : -1);
     setLocaleFxKey((previous) => previous + 1);
     startTransition(() => {
-      setLocale(nextLocale);
+      navigate(getPathForPageId(currentPage, nextLocale));
     });
   };
+
+  if (!pageId) {
+    return <Navigate replace to={getPathForPageId("home", locale)} />;
+  }
 
   return (
     <div className={`min-h-screen bg-white text-slate-900 ${isRtl ? "font-sans" : ""}`}>
       <RouteSeo content={content} pageId={currentPage} />
-      <ScrollManager scrollKey={locale} />
+      <ScrollManager />
 
       <SiteHeader
         content={content}
@@ -76,25 +85,19 @@ function AppShell() {
       <main className={currentPage === "home" ? "" : "pt-22 sm:pt-28"}>
         <AnimatePresence mode="wait">
           <Motion.div
-            key={`${location.pathname}:${locale}`}
+            key={location.pathname}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Routes location={location}>
-              <Route path="/" element={<Home content={content} navTo={navTo} setShowForm={setShowForm} />} />
-              <Route path="/services" element={<Services content={content} navTo={navTo} />} />
-              <Route path="/portfolio" element={<Portfolio content={content} setShowForm={setShowForm} />} />
-              <Route path="/process" element={<Process content={content} setShowForm={setShowForm} />} />
-              <Route path="/contact" element={<Contact content={content} setShowForm={setShowForm} />} />
-              <Route path="*" element={<Navigate replace to="/" />} />
-            </Routes>
+            <Page content={content} navTo={navTo} setShowForm={setShowForm} />
           </Motion.div>
         </AnimatePresence>
       </main>
 
       <SiteFooter content={content} />
+      <WhatsAppButton content={content} />
       <ScrollToTopButton />
 
       <AnimatePresence initial={false}>
@@ -103,7 +106,9 @@ function AppShell() {
         ) : null}
       </AnimatePresence>
 
-      {showForm ? <ContactFormModal content={content} setShowForm={setShowForm} /> : null}
+      {showForm ? (
+        <ContactFormModal content={content} initialIdea={typeof showForm === "string" ? showForm : ""} setShowForm={setShowForm} />
+      ) : null}
     </div>
   );
 }
