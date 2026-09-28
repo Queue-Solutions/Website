@@ -56,7 +56,7 @@ export default function ProjectCard({ index, project, setShowForm, ui }) {
           <PlatformIcon className="text-[10px]" style={{ color: project.accent }} />
           {ui.platforms[project.platform]}
         </span>
-        <span className="absolute end-4 top-4 font-mono text-xs font-semibold tracking-widest text-slate-900/35 mix-blend-multiply">
+        <span className="absolute end-4 top-4 font-mono text-xs font-semibold tracking-widest text-slate-400">
           {number}
         </span>
         {isLive ? (
