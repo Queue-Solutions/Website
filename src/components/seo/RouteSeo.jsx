@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { absoluteUrl, buildPath, OG_IMAGE, SEO } from "../../content/seo";
+import { absoluteUrl, buildPath, buildStructuredData, getSeo } from "../../content/seo";
 import { getAbsoluteUrl } from "../../lib/routes";
 
 const GA_MEASUREMENT_ID = "G-19YFREF1C7";
@@ -31,12 +31,12 @@ function upsertLink(selector, attributes) {
   });
 }
 
-export default function RouteSeo({ content, pageId }) {
+export default function RouteSeo({ content, pageId, slug = null }) {
   const location = useLocation();
   const trackedInitialView = useRef(false);
   const locale = content.locale;
-  const seo = useMemo(() => SEO[locale][pageId] ?? SEO[locale].home, [locale, pageId]);
-  const canonicalUrl = absoluteUrl(buildPath(pageId, locale));
+  const seo = useMemo(() => getSeo(locale, pageId, slug), [locale, pageId, slug]);
+  const canonicalUrl = absoluteUrl(buildPath(pageId, locale, slug));
   const pageLocation = getAbsoluteUrl(`${location.pathname}${location.search}${location.hash}`);
 
   useEffect(() => {
@@ -78,19 +78,23 @@ export default function RouteSeo({ content, pageId }) {
       property: "og:locale",
       content: locale === "ar" ? "ar_EG" : "en_US",
     });
-    upsertMeta('meta[property="og:image"]', { property: "og:image", content: OG_IMAGE });
+    upsertMeta('meta[property="og:image"]', { property: "og:image", content: seo.image });
+    const structuredData = document.getElementById("structured-data");
+    if (structuredData) {
+      structuredData.textContent = JSON.stringify(buildStructuredData(locale, pageId, slug));
+    }
     upsertLink('link[rel="canonical"]', {
       rel: "canonical",
       href: canonicalUrl,
     });
     [
-      ["en", buildPath(pageId, "en")],
-      ["ar", buildPath(pageId, "ar")],
-      ["x-default", buildPath(pageId, "en")],
+      ["en", buildPath(pageId, "en", slug)],
+      ["ar", buildPath(pageId, "ar", slug)],
+      ["x-default", buildPath(pageId, "en", slug)],
     ].forEach(([hreflang, path]) => {
       upsertLink(`link[rel="alternate"][hreflang="${hreflang}"]`, { rel: "alternate", hreflang, href: absoluteUrl(path) });
     });
-  }, [canonicalUrl, content.siteDetails.name, locale, pageId, seo.description, seo.title]);
+  }, [canonicalUrl, content.siteDetails.name, locale, pageId, seo.description, seo.image, seo.title, slug]);
 
   useEffect(() => {
     if (!trackedInitialView.current) {

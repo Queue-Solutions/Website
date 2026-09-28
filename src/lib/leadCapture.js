@@ -146,7 +146,7 @@ export function buildLeadRecord({ activePhoneCountry, formData, pageUrl, subject
     email,
     phone: normalizedPhoneValue,
     company: company || null,
-    service: null,
+    service: cleanText(formData.service) || null,
     subject: cleanText(subject) || null,
     message,
     status: "new",

@@ -2,6 +2,7 @@ import { FaArrowRight, FaEnvelope, FaFacebookF, FaInstagram, FaPaperPlane, FaWha
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
 import AnimatedImage from "../components/ui/AnimatedImage";
+import AuditBanner from "../components/ui/AuditBanner";
 import FocusSection from "../components/ui/FocusSection";
 import Reveal from "../components/ui/Reveal";
 import SectionHeading from "../components/ui/SectionHeading";
@@ -79,6 +80,14 @@ export default function Contact({ content, setShowForm }) {
             imageClassName="h-[12.75rem] object-center sm:h-[20rem] md:h-full md:min-h-[30rem]"
           />
       </FocusSection>
+
+      <section className="px-5 pb-14 sm:px-6 sm:pb-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <AuditBanner setShowForm={setShowForm} ui={ui} />
+          </Reveal>
+        </div>
+      </section>
 
       <FocusSection className="bg-slate-950 px-5 py-14 sm:px-6 sm:py-20 md:py-24" innerClassName="mx-auto grid max-w-xl items-stretch gap-6 md:max-w-6xl md:grid-cols-[1fr_0.9fr] md:gap-8">
           <Reveal className="h-full overflow-hidden rounded-[2rem] bg-slate-950 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)] sm:p-8 md:p-10">

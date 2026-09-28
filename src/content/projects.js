@@ -1,10 +1,15 @@
 // Plain data (no Vite imports) so scripts/prerender.mjs can read it at build time too.
+import { CASE_STUDIES } from "./caseStudies.js";
+import { PRODUCT_LANDING } from "./products.js";
+
 const logo = (file) => `/portfolio/${file}`;
+const shot = (file) => `/case-studies/${file}.webp`;
 
 // Language-independent project facts. Copy for each project lives in the locale blocks below.
 export const PROJECT_META = {
   glowmia: {
     logo: logo("glowmia.webp"),
+    gallery: [shot("glowmia-home")],
     href: "https://glowmia.vercel.app/",
     platform: "web",
     filters: ["web", "ai"],
@@ -14,6 +19,7 @@ export const PROJECT_META = {
   },
   "egypt-gold-design": {
     logo: logo("maison-dia.svg"),
+    gallery: [shot("egypt-gold-design-home")],
     href: "https://diamond-design-ai-mu.vercel.app",
     platform: "web",
     filters: ["web", "ai"],
@@ -39,6 +45,10 @@ export const PROJECT_META = {
   },
   "queue-pos": {
     logo: logo("queue-pos.webp"),
+    video: "/videos/queue-pos-demo.mp4",
+    poster: shot("queue-pos-poster"),
+    videoOrientation: "portrait",
+    gallery: [shot("queue-pos-reports"), shot("queue-pos-branches")],
     platform: "desktop",
     filters: ["desktop"],
     accent: "#8a5a33",
@@ -47,6 +57,10 @@ export const PROJECT_META = {
   },
   molarbear: {
     logo: logo("molarbear.webp"),
+    video: "/videos/molarbear-demo.mp4",
+    poster: shot("molarbear-poster"),
+    videoOrientation: "landscape",
+    gallery: [shot("molarbear-clinic-flow"), shot("molarbear-dental-chart"), shot("molarbear-dashboard"), shot("molarbear-patients"), shot("molarbear-inventory"), shot("molarbear-earnings")],
     platform: "desktop",
     filters: ["desktop"],
     accent: "#2f7d8c",
@@ -231,5 +245,12 @@ export const PROJECT_COPY = {
 };
 
 export function getProjects(locale) {
-  return PROJECT_COPY[locale].map((project) => ({ ...PROJECT_META[project.id], ...project }));
+  return PROJECT_COPY[locale].map((project) => ({
+    ...PROJECT_META[project.id],
+    ...project,
+    caseStudy: CASE_STUDIES[locale][project.id],
+    landing: PRODUCT_LANDING[project.id] ?? null,
+  }));
 }
+
+export const PROJECT_IDS = Object.keys(PROJECT_META);

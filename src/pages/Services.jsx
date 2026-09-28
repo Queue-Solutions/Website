@@ -2,6 +2,7 @@ import { FaArrowRight, FaBrain, FaCode, FaCogs, FaDatabase, FaGlobe, FaHeadset, 
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
 import AnimatedImage from "../components/ui/AnimatedImage";
+import AuditBanner from "../components/ui/AuditBanner";
 import ExpandableText from "../components/ui/ExpandableText";
 import FocusSection from "../components/ui/FocusSection";
 import Reveal from "../components/ui/Reveal";
@@ -17,7 +18,7 @@ const iconMap = {
   mobile: FaMobileAlt,
 };
 
-export default function Services({ content, navTo }) {
+export default function Services({ content, navTo, setShowForm }) {
   const servicesContent = content.services;
   const ui = content.ui;
   const locale = content.locale;
@@ -323,6 +324,13 @@ export default function Services({ content, navTo }) {
           </div>
         </Reveal>
       </FocusSection>
+      <section className="px-5 py-14 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <AuditBanner setShowForm={setShowForm} ui={ui} />
+          </Reveal>
+        </div>
+      </section>
     </PageShell>
   );
 }

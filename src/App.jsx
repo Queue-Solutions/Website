@@ -1,7 +1,6 @@
 import { AnimatePresence, motion as Motion } from "framer-motion";
-import { startTransition, useEffect, useState } from "react";
+import { lazy, startTransition, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, useLocation, useNavigate } from "react-router-dom";
-import ContactFormModal from "./components/layout/ContactFormModal";
 import ScrollManager from "./components/routing/ScrollManager";
 import RouteSeo from "./components/seo/RouteSeo";
 import ScrollToTopButton from "./components/layout/ScrollToTopButton";
@@ -10,11 +9,19 @@ import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
 import { SITE_CONTENT } from "./content/siteContent";
 import { getPathForPageId, getRouteForPath } from "./lib/routes";
-import Contact from "./pages/Contact";
-import Home from "./pages/Home";
-import Portfolio from "./pages/Portfolio";
-import Process from "./pages/Process";
-import Services from "./pages/Services";
+
+const ContactFormModal = lazy(() => import("./components/layout/ContactFormModal"));
+
+// Each page is its own chunk so visitors only download the page they open.
+const PAGES = {
+  home: lazy(() => import("./pages/Home")),
+  services: lazy(() => import("./pages/Services")),
+  portfolio: lazy(() => import("./pages/Portfolio")),
+  process: lazy(() => import("./pages/Process")),
+  contact: lazy(() => import("./pages/Contact")),
+  "case-study": lazy(() => import("./pages/CaseStudy")),
+  landing: lazy(() => import("./pages/ProductLanding")),
+};
 
 export default function App() {
   return (
@@ -24,17 +31,16 @@ export default function App() {
   );
 }
 
-const PAGES = { home: Home, services: Services, portfolio: Portfolio, process: Process, contact: Contact };
-
 function AppShell() {
-  // false = closed, true = open, string = open with this text prefilled (e.g. a demo request).
+  // false = closed, true = open, string = open with this idea prefilled (e.g. a demo request),
+  // { mode: "audit" } = open as a free digital audit request.
   const [showForm, setShowForm] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [localeFxKey, setLocaleFxKey] = useState(0);
   const [localeFxDirection, setLocaleFxDirection] = useState(1);
   const location = useLocation();
   const navigate = useNavigate();
-  const { locale, pageId } = getRouteForPath(location.pathname);
+  const { locale, pageId, slug } = getRouteForPath(location.pathname);
   const currentPage = pageId ?? "home";
   const content = SITE_CONTENT[locale];
   const isRtl = content.direction === "rtl";
@@ -46,9 +52,9 @@ function AppShell() {
     document.body.dir = content.direction;
   }, [content.direction, locale]);
 
-  const navTo = (page) => {
+  const navTo = (page, pageSlug = null) => {
     setMobileMenuOpen(false);
-    navigate(getPathForPageId(page, locale));
+    navigate(getPathForPageId(page, locale, pageSlug));
   };
 
   const handleLocaleChange = (nextLocale) => {
@@ -60,7 +66,7 @@ function AppShell() {
     setLocaleFxDirection(nextLocale === "ar" ? 1 : -1);
     setLocaleFxKey((previous) => previous + 1);
     startTransition(() => {
-      navigate(getPathForPageId(currentPage, nextLocale));
+      navigate(getPathForPageId(currentPage, nextLocale, slug));
     });
   };
 
@@ -70,7 +76,7 @@ function AppShell() {
 
   return (
     <div className={`min-h-screen bg-white text-slate-900 ${isRtl ? "font-sans" : ""}`}>
-      <RouteSeo content={content} pageId={currentPage} />
+      <RouteSeo content={content} pageId={currentPage} slug={slug} />
       <ScrollManager />
 
       <SiteHeader
@@ -82,7 +88,7 @@ function AppShell() {
         setShowForm={setShowForm}
       />
 
-      <main className={currentPage === "home" ? "" : "pt-22 sm:pt-28"}>
+      <main className={currentPage === "home" ? "min-h-screen" : "min-h-screen pt-22 sm:pt-28"}>
         <AnimatePresence mode="wait">
           <Motion.div
             key={location.pathname}
@@ -91,7 +97,9 @@ function AppShell() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Page content={content} navTo={navTo} setShowForm={setShowForm} />
+            <Suspense fallback={<div className="min-h-screen" />}>
+              <Page content={content} navTo={navTo} setShowForm={setShowForm} slug={slug} />
+            </Suspense>
           </Motion.div>
         </AnimatePresence>
       </main>
@@ -107,7 +115,14 @@ function AppShell() {
       </AnimatePresence>
 
       {showForm ? (
-        <ContactFormModal content={content} initialIdea={typeof showForm === "string" ? showForm : ""} setShowForm={setShowForm} />
+        <Suspense fallback={null}>
+          <ContactFormModal
+            content={content}
+            initialIdea={typeof showForm === "string" ? showForm : ""}
+            initialMode={showForm?.mode ?? "project"}
+            setShowForm={setShowForm}
+          />
+        </Suspense>
       ) : null}
     </div>
   );

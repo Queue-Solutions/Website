@@ -1,5 +1,5 @@
 import { FaFacebookF, FaInstagram, FaEnvelope, FaWhatsapp } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { getPathForPageId } from "../../lib/routes";
 import Reveal from "../ui/Reveal";
 
@@ -30,7 +30,7 @@ export default function SiteFooter({ content }) {
   return (
     <footer className="border-t border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.96)_0%,rgba(255,255,255,1)_100%)] px-5 py-14 text-slate-900 sm:px-6 sm:py-16">
       <Reveal className="mx-auto max-w-7xl rounded-[2rem] border border-slate-200 bg-white/86 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-8 md:p-10">
-        <div className={`grid gap-10 ${desktopAlign} lg:grid-cols-[1.1fr_0.6fr_0.7fr]`}>
+        <div className={`grid gap-10 ${desktopAlign} sm:grid-cols-2 lg:grid-cols-[1.2fr_0.6fr_0.8fr_0.7fr]`}>
           <div className={`space-y-5 text-center ${desktopAlign}`}>
             <div className={"flex items-center justify-center gap-3 md:justify-start"}>
               <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_18px_34px_rgba(15,23,42,0.08)]">
@@ -65,6 +65,24 @@ export default function SiteFooter({ content }) {
                   {item.label}
                 </NavLink>
               ))}
+            </div>
+          </div>
+
+          <div className={`text-center ${desktopAlign}`}>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">{content.ui.productsSection.footerTitle}</p>
+            <div className="mt-4 grid gap-2">
+              {content.portfolio.projects
+                .filter((project) => project.landing)
+                .map((project) => (
+                  <Link
+                    key={project.id}
+                    to={getPathForPageId("landing", content.locale, project.landing)}
+                    className="flex items-center justify-center gap-2.5 rounded-xl px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 md:justify-start"
+                  >
+                    <img src={project.logo} alt="" className="h-6 w-6 rounded-md object-cover" loading="lazy" />
+                    {project.title}
+                  </Link>
+                ))}
             </div>
           </div>
 

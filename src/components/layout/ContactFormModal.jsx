@@ -15,7 +15,9 @@ import ActionButton from "../ui/ActionButton";
 const inputClassName =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-400 transition focus:border-purple-500/50 focus:outline-none";
 
-export default function ContactFormModal({ content, initialIdea = "", setShowForm }) {
+export default function ContactFormModal({ content, initialIdea = "", initialMode = "project", setShowForm }) {
+  const [mode, setMode] = useState(initialMode);
+  const [website, setWebsite] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     businessName: "",
@@ -38,6 +40,7 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
   const scrollRef = useRef(null);
   const indicatorTrackRef = useRef(null);
   const modal = content.ui.modal;
+  const isAudit = mode === "audit";
   const isArabic = content.locale === "ar";
   const activePhoneCountry = PHONE_COUNTRIES.find((country) => country.code === formData.phoneCountry) ?? PHONE_COUNTRIES[0];
   const trimmedName = formData.name.trim();
@@ -210,10 +213,14 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
 
     setSubmitState("submitting");
 
-    const leadSubject = `${modal.emailSubject} ${trimmedName}`;
+    const trimmedWebsite = website.trim();
+    const leadMessage = isAudit
+      ? [`[${modal.auditTag}]`, trimmedWebsite ? `${modal.auditWebsiteLabel}: ${trimmedWebsite}` : "", trimmedIdea].filter(Boolean).join("\n")
+      : trimmedIdea;
+    const leadSubject = `${isAudit ? modal.auditSubject : modal.emailSubject} ${trimmedName}`;
     const leadRecord = buildLeadRecord({
       activePhoneCountry,
-      formData,
+      formData: { ...formData, idea: leadMessage, service: isAudit ? "digital_audit" : "project" },
       pageUrl: typeof window !== "undefined" ? window.location.href : null,
       subject: leadSubject,
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : null,
@@ -226,7 +233,7 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
         await sendLeadNotification({
           businessName: trimmedBusinessName,
           email: trimmedEmail,
-          message: trimmedIdea,
+          message: leadMessage,
           name: trimmedName,
           phone: leadRecord.phone,
           replyTo: trimmedEmail,
@@ -274,12 +281,43 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
 
         <div ref={scrollRef} className="modal-scroll max-h-[92vh] overflow-y-auto px-5 py-5 pr-8 sm:px-8 sm:py-8 sm:pr-12 md:px-10 md:py-10 md:pr-14">
           <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-purple-700">{modal.eyebrow}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-purple-700">{isAudit ? modal.auditEyebrow : modal.eyebrow}</p>
             <h2 id="project-inquiry-title" className="text-[2rem] font-bold leading-[1.08] text-slate-950 sm:text-3xl">
-              {modal.title}
+              {isAudit ? modal.auditTitle : modal.title}
             </h2>
-            <p className="text-slate-600">{modal.description}</p>
+            <p className="text-slate-600">{isAudit ? modal.auditDescription : modal.description}</p>
           </div>
+
+          {submitState !== "success" ? (
+            <div role="tablist" className="mt-6 grid grid-cols-2 gap-1 rounded-2xl border border-slate-200 bg-slate-100 p-1">
+              {[
+                ["project", modal.modeProject],
+                ["audit", modal.modeAudit],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === id}
+                  onClick={() => {
+                    setMode(id);
+                    // A prefilled demo request makes no sense as an audit request.
+                    if (initialIdea && formData.idea === initialIdea) {
+                      setFormData((previous) => ({ ...previous, idea: "" }));
+                    }
+                  }}
+                  className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                    mode === id ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  {label}
+                  {id === "audit" ? (
+                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700">{modal.freeBadge}</span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           {submitState === "success" ? (
             <div className="mt-8 space-y-5">
@@ -381,9 +419,21 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
                 ) : null}
               </div>
 
+              {isAudit ? (
+                <input
+                  type="text"
+                  name="website"
+                  dir="ltr"
+                  placeholder={modal.auditWebsite}
+                  onChange={(event) => setWebsite(event.target.value)}
+                  value={website}
+                  className={`${inputClassName} text-start`}
+                />
+              ) : null}
+
               <textarea
                 name="idea"
-                placeholder={modal.idea}
+                placeholder={isAudit ? modal.auditIdea : modal.idea}
                 rows="5"
                 onChange={handleInputChange}
                 value={formData.idea}
@@ -398,7 +448,7 @@ export default function ContactFormModal({ content, initialIdea = "", setShowFor
                   {modal.cancel}
                 </ActionButton>
                 <ActionButton className="sm:flex-1" disabled={submitState === "submitting"} type="submit">
-                  {submitState === "submitting" ? sendingLabel : modal.submit}
+                  {submitState === "submitting" ? sendingLabel : isAudit ? modal.auditSubmit : modal.submit}
                 </ActionButton>
               </div>
 

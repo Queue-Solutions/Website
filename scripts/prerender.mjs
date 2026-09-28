@@ -4,8 +4,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { getProjects } from "../src/content/projects.js";
-import { absoluteUrl, buildPath, buildStructuredData, LOCALES, PAGE_IDS, SEO } from "../src/content/seo.js";
+import { absoluteUrl, ALL_ROUTES, buildPath, buildStructuredData, getSeo, LOCALES } from "../src/content/seo.js";
 
 const dist = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
 const template = readFileSync(join(dist, "index.html"), "utf8");
@@ -28,13 +27,11 @@ const today = new Date().toISOString().slice(0, 10);
 const sitemapEntries = [];
 
 for (const locale of LOCALES) {
-  const projects = getProjects(locale);
-
-  for (const pageId of PAGE_IDS) {
-    const { title, description } = SEO[locale][pageId];
-    const path = buildPath(pageId, locale);
+  for (const { pageId, slug } of ALL_ROUTES) {
+    const { title, description, image } = getSeo(locale, pageId, slug);
+    const path = buildPath(pageId, locale, slug);
     const url = absoluteUrl(path);
-    const alternates = { en: absoluteUrl(buildPath(pageId, "en")), ar: absoluteUrl(buildPath(pageId, "ar")) };
+    const alternates = { en: absoluteUrl(buildPath(pageId, "en", slug)), ar: absoluteUrl(buildPath(pageId, "ar", slug)) };
 
     let html = template;
     html = html.replace(/<html lang="[^"]*" dir="[^"]*">/, `<html lang="${locale === "ar" ? "ar-EG" : "en"}" dir="${locale === "ar" ? "rtl" : "ltr"}">`);
@@ -50,9 +47,12 @@ for (const locale of LOCALES) {
     html = setAttr(html, 'meta property="og:url"', "content", url);
     html = setAttr(html, 'meta name="twitter:title"', "content", title);
     html = setAttr(html, 'meta name="twitter:description"', "content", description);
+    html = setAttr(html, 'meta property="og:image"', "content", image);
+    html = setAttr(html, 'meta name="twitter:image"', "content", image);
+    if (pageId === "case-study") html = html.replace('<meta property="og:type" content="website" />', '<meta property="og:type" content="article" />');
     html = html.replace(
       /<script type="application\/ld\+json" id="structured-data">[\s\S]*?<\/script>/,
-      `<script type="application/ld+json" id="structured-data">${JSON.stringify(buildStructuredData(locale, pageId, projects)).replace(/</g, "\\u003c")}</script>`,
+      `<script type="application/ld+json" id="structured-data">${JSON.stringify(buildStructuredData(locale, pageId, slug)).replace(/</g, "\\u003c")}</script>`,
     );
 
     const file = outputFile(path);
@@ -63,7 +63,7 @@ for (const locale of LOCALES) {
     <loc>${url}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>${pageId === "home" ? "1.0" : "0.8"}</priority>
+    <priority>${pageId === "home" ? "1.0" : pageId === "landing" ? "0.9" : "0.8"}</priority>
     <xhtml:link rel="alternate" hreflang="en" href="${alternates.en}" />
     <xhtml:link rel="alternate" hreflang="ar" href="${alternates.ar}" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${alternates.en}" />

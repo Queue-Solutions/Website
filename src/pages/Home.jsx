@@ -1,307 +1,246 @@
 import { motion as Motion } from "framer-motion";
+import { FaArrowRight, FaBrain, FaCogs, FaGlobe } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
-import AnimatedImage from "../components/ui/AnimatedImage";
-import ExpandableText from "../components/ui/ExpandableText";
-import FocusSection from "../components/ui/FocusSection";
+import AuditBanner from "../components/ui/AuditBanner";
 import ProjectCard from "../components/ui/ProjectCard";
+import ProjectLogoStage from "../components/ui/ProjectLogoStage";
 import Reveal from "../components/ui/Reveal";
-import SectionHeading from "../components/ui/SectionHeading";
+import { PRICING } from "../content/products";
+import { trackLeadClick } from "../lib/analytics";
+import { formatPrice } from "../lib/format";
+import { getPathForPageId } from "../lib/routes";
+
+const SERVICE_ICONS = [FaGlobe, FaCogs, FaBrain];
+const FEATURED_IDS = ["glowmia", "egypt-gold-design", "egypt-gold-whatsapp"];
+const PRODUCT_IDS = ["queue-pos", "molarbear"];
+
+function SectionHeader({ action, description, eyebrow, title }) {
+  return (
+    <div className="flex flex-col gap-5 text-start md:flex-row md:items-end md:justify-between">
+      <div className="max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-700">{eyebrow}</p>
+        <h2 className="mt-3 text-[1.75rem] font-bold leading-tight text-slate-950 sm:text-4xl">{title}</h2>
+        {description ? <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">{description}</p> : null}
+      </div>
+      {action}
+    </div>
+  );
+}
 
 export default function Home({ content, navTo, setShowForm }) {
-  const home = content.home;
-  const portfolio = content.portfolio;
-  const process = content.process;
-  const contact = content.contact;
-  const ui = content.ui;
-  const locale = content.locale;
-  const isArabic = locale === "ar";
-  const featuredIds = ["glowmia", "egypt-gold-design", "queue-pos"];
-  const portfolioPreview = featuredIds.map((id) => portfolio.projects.find((project) => project.id === id)).filter(Boolean);
+  const { home, portfolio, process, ui, locale } = content;
+  const featured = FEATURED_IDS.map((id) => portfolio.projects.find((project) => project.id === id));
+  const products = PRODUCT_IDS.map((id) => portfolio.projects.find((project) => project.id === id));
 
   return (
     <PageShell>
-      <FocusSection
-        className="flex min-h-[100svh] items-center px-5 pb-8 pt-24 sm:px-6 sm:pb-12 sm:pt-28 md:pt-32"
-        innerClassName="mx-auto w-full max-w-xl text-center md:max-w-6xl"
-      >
-        <Reveal className="mx-auto flex min-h-[calc(100svh-8rem)] w-full flex-col justify-between sm:min-h-[calc(100svh-9rem)] sm:justify-start sm:gap-0">
-            <div className="flex flex-1 flex-col items-center justify-center">
-              <Motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="inline-flex max-w-[20rem] items-center gap-2 rounded-full border border-purple-200 bg-white/80 px-4 py-2 text-xs font-medium text-purple-700 shadow-[0_12px_30px_rgba(168,85,247,0.12)] backdrop-blur sm:max-w-none sm:text-sm"
-              >
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-                {home.heroBadge}
-              </Motion.p>
-              <Motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.1 }}
-                className={`mx-auto mt-7 flex w-full flex-col items-center overflow-visible pb-2 text-center font-bold text-slate-950 max-w-[20rem] text-[2.6rem] leading-[1.04] sm:max-w-6xl sm:pb-3 sm:text-6xl lg:text-[6rem]`}
-              >
-                <span className="mt-2 block w-full overflow-visible pb-[0.12em] text-center bg-gradient-to-r from-slate-950 via-purple-700 to-violet-500 bg-clip-text text-transparent">
-                  {home.heroTitleAccent}
-                </span>
-                <span
-                  className={`mx-auto mt-3 block ${
-                    isArabic
-                      ? "max-w-[18rem] text-center text-[0.62em] leading-[1.2] sm:max-w-4xl"
-                      : "text-[0.62em] leading-[1.08] md:hidden"
-                  }`}
+      {/* Hero */}
+      <section className="flex min-h-[88svh] items-center px-5 pb-16 pt-28 sm:px-6 sm:pt-32">
+        <div className="mx-auto w-full max-w-5xl text-center">
+          <Motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.05 }}
+            className="font-bold leading-[1.04] text-slate-950"
+          >
+            <span className="block bg-gradient-to-r from-slate-950 via-purple-700 to-violet-500 bg-clip-text pb-[0.1em] text-[2.9rem] text-transparent sm:text-7xl lg:text-[6rem]">
+              {home.heroTitleAccent}
+            </span>
+            <span className="mt-3 block text-[1.65rem] leading-[1.2] sm:text-5xl lg:text-[3.6rem]">{home.heroTitleTop}</span>
+          </Motion.h1>
+
+          <Motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.15 }}
+            className="mx-auto mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-xl"
+          >
+            {home.heroDescription}
+          </Motion.p>
+
+          <Motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
+          >
+            <ActionButton onClick={() => setShowForm(true)} className="w-full justify-center px-8 sm:w-auto">
+              {ui.startProject}
+            </ActionButton>
+            <ActionButton onClick={() => navTo("portfolio")} variant="secondary" className="w-full justify-center px-8 sm:w-auto">
+              {ui.viewPortfolio}
+            </ActionButton>
+          </Motion.div>
+        </div>
+      </section>
+
+      {/* What we do */}
+      <section className="px-5 pb-16 sm:px-6 sm:pb-24">
+        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">
+          {home.heroCards.map((card, index) => {
+            const Icon = SERVICE_ICONS[index];
+            return (
+              <Reveal key={card.title} delay={index * 0.05}>
+                <button
+                  type="button"
+                  onClick={() => navTo("services")}
+                  className="group flex h-full w-full flex-col rounded-[1.5rem] border border-slate-200 bg-white/85 p-6 text-start shadow-[0_14px_40px_rgba(15,23,42,0.06)] transition hover:-translate-y-1 hover:border-purple-200 hover:shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
                 >
-                  {home.heroTitleTop}
-                </span>
-                {!isArabic ? (
-                  <span className="mt-3 hidden whitespace-nowrap text-[0.62em] leading-[1.08] md:block">{home.heroTitleTop}</span>
-                ) : null}
-              </Motion.h1>
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-lg text-purple-700">
+                    <Icon />
+                  </span>
+                  <h2 className="mt-5 text-xl font-bold text-slate-950">{card.title}</h2>
+                  <p className="mt-2 flex-1 text-[15px] leading-7 text-slate-600">{card.description}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-purple-700">
+                    {ui.ourServices}
+                    <FaArrowRight className="text-xs transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                  </span>
+                </button>
+              </Reveal>
+            );
+          })}
+        </div>
+      </section>
 
-              <Motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.2 }}
-                className="mx-auto mt-5 max-w-[21rem] text-[15px] leading-7 text-slate-600 sm:mt-6 sm:max-w-3xl sm:text-xl"
-              >
-                {home.heroDescription}
-              </Motion.p>
-
-              <Motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4"
-              >
-                <ActionButton onClick={() => setShowForm(true)} className="w-full justify-center px-7 sm:w-auto">
-                  {ui.startProject}
-                </ActionButton>
-                <ActionButton onClick={() => navTo("portfolio")} variant="secondary" className="w-full justify-center px-7 sm:w-auto">
-                  {ui.viewPortfolio}
-                </ActionButton>
-              </Motion.div>
-            </div>
-
-            <Motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-10 border-t border-slate-300/60 pt-5 sm:pt-6"
-            >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-xs">{ui.trustedBy}</p>
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
-                {portfolio.projects.map((project) => (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => navTo("portfolio")}
-                    className="group flex items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white/70 py-1.5 pe-3.5 ps-1.5 shadow-sm transition hover:-translate-y-0.5 hover:border-purple-200 hover:bg-white"
-                  >
-                    <img src={project.logo} alt="" className="h-8 w-8 rounded-xl object-cover grayscale transition group-hover:grayscale-0 sm:h-9 sm:w-9" loading="lazy" width="36" height="36" />
-                    <span className="text-xs font-semibold text-slate-600 group-hover:text-slate-950 sm:text-sm" dir="ltr">{project.title}</span>
-                  </button>
-                ))}
+      {/* Featured work */}
+      <section className="bg-slate-950 px-5 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <Reveal>
+            <div className="flex flex-col gap-5 text-start md:flex-row md:items-end md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-purple-300">{portfolio.hero.eyebrow}</p>
+                <h2 className="mt-3 text-[1.75rem] font-bold leading-tight text-white sm:text-4xl">{portfolio.hero.title}</h2>
               </div>
-            </Motion.div>
-          </Reveal>
-      </FocusSection>
-
-      <FocusSection
-        className="border-y border-slate-300/50 bg-slate-100/58 px-5 py-14 sm:px-6 sm:py-20 md:py-24"
-        innerClassName="mx-auto grid max-w-xl items-stretch gap-6 md:max-w-6xl md:grid-cols-2 md:gap-12"
-      >
-          <Reveal className="mx-auto h-full w-full max-w-xl rounded-[2rem] border border-slate-200/80 bg-white/80 p-5 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur sm:p-8 md:max-w-none md:p-10">
-            <div className="flex h-full flex-col justify-center">
-            <SectionHeading
-              eyebrow={home.sections[0].eyebrow}
-              locale={locale}
-              mobileDescription={home.sections[0].mobileDescription}
-              mobileTitle={home.sections[0].mobileTitle}
-              title={home.sections[0].title}
-              description={home.sections[0].description}
-            />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {home.sections[0].points.map((point) => (
-                <div key={point.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-900">{point.title}</p>
-                  <p className="mt-2 text-sm text-slate-600">{point.description}</p>
-                </div>
-              ))}
-            </div>
-            </div>
-          </Reveal>
-
-          <AnimatedImage
-            src={home.sections[0].image}
-            alt={home.sections[0].imageAlt}
-            className="mx-auto h-full w-full max-w-sm sm:max-w-xl md:max-w-none"
-            imageClassName="h-[12.75rem] object-center sm:h-[20rem] md:h-full md:min-h-[26rem]"
-          />
-      </FocusSection>
-
-      <FocusSection className="bg-slate-950 px-5 py-14 sm:px-6 sm:py-20 md:py-24" innerClassName="mx-auto grid max-w-xl items-stretch gap-6 md:max-w-6xl md:grid-cols-2 md:gap-12">
-          <AnimatedImage
-            src={home.sections[1].image}
-            alt={home.sections[1].imageAlt}
-            className="order-2 mx-auto w-full max-w-sm sm:max-w-xl md:order-1 md:max-w-[34rem]"
-            imageClassName="h-[12.5rem] object-center sm:h-[18rem] md:h-[22rem] lg:h-[24rem]"
-          />
-
-          <Reveal className="order-1 mx-auto h-full w-full max-w-xl overflow-hidden rounded-[2rem] border border-slate-900/90 bg-slate-950 p-5 shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:p-8 md:order-2 md:max-w-none md:p-10">
-            <div className="flex h-full max-w-[18.5rem] flex-col justify-center sm:max-w-none">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-purple-200">
-              {home.sections[1].eyebrow}
-            </p>
-            <h2 className="mt-4 text-[1.9rem] font-bold leading-[1.05] text-white sm:text-4xl lg:text-5xl">
-              <span className="md:hidden">{home.sections[1].mobileTitle ?? home.sections[1].title}</span>
-              <span className="hidden md:inline">{home.sections[1].title}</span>
-            </h2>
-            <div className="mt-4">
-              <ExpandableText
-                className="max-w-[18rem] text-[15px] leading-7 text-slate-300 sm:max-w-2xl md:text-lg"
-                desktopText={home.sections[1].description}
-                locale={locale}
-                mobileWords={7}
-                text={home.sections[1].mobileDescription ?? home.sections[1].description}
-              />
-            </div>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {home.sections[1].tags.map((tag) => (
-                <div
-                  key={tag}
-                  className="rounded-full border border-white/12 bg-white/8 px-4 py-3 text-sm font-medium text-slate-100 backdrop-blur"
-                >
-                  {tag}
-                </div>
-              ))}
-            </div>
-            </div>
-          </Reveal>
-      </FocusSection>
-
-      <FocusSection
-        className="border-y border-slate-300/50 bg-slate-100/58 px-5 py-14 sm:px-6 sm:py-20 md:py-24"
-        innerClassName="mx-auto max-w-xl space-y-8 md:max-w-6xl"
-      >
-          <Reveal>
-            <SectionHeading
-              eyebrow={home.gallery.eyebrow}
-              locale={locale}
-              mobileDescription={home.gallery.mobileDescription}
-              mobileTitle={home.gallery.mobileTitle}
-              title={home.gallery.title}
-              description={home.gallery.description}
-            />
-          </Reveal>
-
-          <div className="grid gap-4 md:grid-cols-3 md:gap-8">
-            {home.gallery.images.map((image, index) => (
-              <AnimatedImage
-                key={image.src}
-                src={image.src}
-                alt={image.alt}
-                className={`mx-auto w-full max-w-sm ${index > 0 ? "hidden md:block" : ""} ${index === 1 ? "lg:translate-y-6" : ""}`}
-                imageClassName="h-44 object-center sm:h-64 md:h-72"
-              />
-            ))}
-          </div>
-      </FocusSection>
-
-      <FocusSection
-        className="bg-slate-950 px-5 py-14 sm:px-6 sm:py-20 md:py-24"
-        innerClassName="mx-auto max-w-xl space-y-8 md:max-w-6xl"
-      >
-          <Reveal>
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <SectionHeading
-                className="space-y-3 md:space-y-4"
-                descriptionClassName="max-w-[20rem] text-slate-300 sm:max-w-2xl md:max-w-3xl"
-                eyebrow={portfolio.hero.eyebrow}
-                locale={locale}
-                mobileDescription={portfolio.hero.mobileDescription}
-                mobileTitle={portfolio.hero.mobileTitle}
-                title={portfolio.hero.title}
-                titleClassName="text-white"
-                description={portfolio.hero.description}
-              />
               <ActionButton onClick={() => navTo("portfolio")} variant="secondary" className="w-full justify-center md:w-auto">
                 {ui.viewPortfolio}
               </ActionButton>
             </div>
           </Reveal>
-
-          <div className="grid gap-6 md:grid-cols-3 xl:gap-7">
-            {portfolioPreview.map((project, index) => (
-              <Reveal key={project.id} delay={index * 0.05} className="mx-auto w-full max-w-md md:max-w-none">
-                <ProjectCard index={portfolio.projects.indexOf(project)} project={project} setShowForm={setShowForm} ui={ui} />
+          <div className="grid gap-6 md:grid-cols-3">
+            {featured.map((project, index) => (
+              <Reveal key={project.id} delay={index * 0.05} className="h-full">
+                <ProjectCard
+                  index={portfolio.projects.indexOf(project)}
+                  locale={locale}
+                  project={project}
+                  setShowForm={setShowForm}
+                  ui={ui}
+                />
               </Reveal>
             ))}
           </div>
-      </FocusSection>
+        </div>
+      </section>
 
-      <FocusSection
-        className="border-y border-slate-300/50 bg-slate-100/58 px-5 py-14 sm:px-6 sm:py-20 md:py-24"
-        innerClassName="mx-auto grid max-w-xl items-stretch gap-6 md:max-w-6xl md:grid-cols-[1.05fr_0.95fr] md:gap-8"
-      >
-          <Reveal className="rounded-[2rem] border border-slate-300/70 bg-slate-100/80 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-8 md:p-10">
-            <SectionHeading
+      {/* Ready-made products */}
+      <section className="px-5 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <Reveal>
+            <SectionHeader eyebrow={ui.productsSection.eyebrow} title={ui.productsSection.title} description={ui.productsSection.description} />
+          </Reveal>
+          <div className="grid gap-6 md:grid-cols-2">
+            {products.map((project, index) => {
+              const plans = PRICING[project.id];
+              const lowest = Math.min(...plans.map((plan) => plan.price));
+              const yearly = plans[0].period === "year";
+
+              return (
+                <Reveal key={project.id} delay={index * 0.05} className="h-full">
+                  <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+                    <ProjectLogoStage project={project} ui={ui} className="aspect-[2/1]" />
+                    <div className="flex flex-1 flex-col p-6 sm:p-7">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: project.accent }}>
+                        {project.category}
+                      </p>
+                      <h3 className="mt-2 text-2xl font-bold text-slate-950">{project.title}</h3>
+                      <p className="mt-3 flex-1 text-[15px] leading-7 text-slate-600">{project.summary}</p>
+                      <div className="mt-5 flex items-baseline gap-2 border-t border-slate-100 pt-5">
+                        <span className="text-sm font-medium text-slate-500">{yearly ? ui.pricing.from : ""}</span>
+                        <span className="text-3xl font-bold text-slate-950">{formatPrice(lowest, locale)}</span>
+                        <span className="text-sm font-semibold text-slate-500">
+                          {ui.pricing.currency} {yearly ? ui.pricing.perYear : `· ${ui.pricing.oneTime}`}
+                        </span>
+                      </div>
+                      <div className="mt-5 grid grid-cols-2 gap-2">
+                        <Link
+                          to={getPathForPageId("landing", locale, project.landing)}
+                          className="inline-flex h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-3 text-[13px] font-semibold text-slate-800 transition hover:bg-slate-50"
+                        >
+                          {ui.pricing.seePricing}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            trackLeadClick("demo_request", `${project.id}:home`);
+                            setShowForm(`${ui.modal.demoPrefix} ${project.title}.`);
+                          }}
+                          className="inline-flex h-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold text-white transition hover:brightness-110"
+                          style={{ backgroundColor: project.accent }}
+                        >
+                          {ui.requestDemo}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* How we work */}
+      <section className="border-y border-slate-200/70 bg-white/60 px-5 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <Reveal>
+            <SectionHeader
               eyebrow={ui.processSteps}
-              locale={locale}
-              mobileTitle={process.stepsMobileTitle}
               title={process.stepsTitle}
-              description={process.hero.description}
+              action={
+                <button type="button" onClick={() => navTo("process")} className="inline-flex items-center gap-2 text-sm font-semibold text-purple-700 hover:text-purple-900">
+                  {process.hero.eyebrow} <FaArrowRight className="text-xs rtl:rotate-180" />
+                </button>
+              }
             />
+          </Reveal>
+          <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {process.steps.map((step, index) => (
+              <Reveal key={step.num} delay={index * 0.05} className="h-full">
+                <li className="h-full rounded-[1.5rem] border border-slate-200 bg-white p-6 text-start">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-violet-500 text-sm font-bold text-white">
+                    {step.num}
+                  </span>
+                  <h3 className="mt-4 text-lg font-bold text-slate-950">{step.title}</h3>
+                  <p className="mt-2 text-[15px] leading-7 text-slate-600">{step.description}</p>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {process.steps.map((step) => (
-                <div key={step.num} className="rounded-[1.5rem] border border-slate-300/60 bg-slate-50/88 p-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-purple-600">{step.num}</p>
-                  <h3 className="mt-3 text-lg font-bold text-slate-950">{step.title}</h3>
-                  <ExpandableText
-                    className="mt-2 text-sm leading-7 text-slate-600"
-                    locale={locale}
-                    mobileWords={9}
-                    text={step.description}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8">
-              <ActionButton onClick={() => navTo("process")} variant="secondary" className="w-full justify-center sm:w-auto">
-                {ui.beginProject}
+      {/* Free audit and final CTA */}
+      <section className="px-5 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-6xl space-y-12">
+          <Reveal>
+            <AuditBanner setShowForm={setShowForm} ui={ui} />
+          </Reveal>
+          <Reveal className="text-center">
+            <h2 className="mx-auto max-w-2xl text-[1.75rem] font-bold leading-tight text-slate-950 sm:text-4xl">{content.contact.cta.title}</h2>
+            <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-slate-600">{content.contact.cta.mobileDescription}</p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <ActionButton onClick={() => setShowForm(true)} className="w-full justify-center px-8 sm:w-auto">
+                {ui.startProject}
+              </ActionButton>
+              <ActionButton onClick={() => navTo("contact")} variant="secondary" className="w-full justify-center px-8 sm:w-auto">
+                {ui.contactUs}
               </ActionButton>
             </div>
           </Reveal>
-
-          <Reveal className="h-full overflow-hidden rounded-[2rem] bg-slate-950 p-5 shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:p-8 md:p-10">
-            <div className="flex h-full flex-col justify-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-purple-200">
-                {contact.cta.eyebrow}
-              </p>
-              <h2 className="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl">
-                <span className="md:hidden">{contact.cta.mobileTitle ?? contact.cta.title}</span>
-                <span className="hidden md:inline">{contact.cta.title}</span>
-              </h2>
-              <ExpandableText
-                className="mt-4 max-w-2xl text-base text-slate-300 md:text-lg"
-                desktopText={contact.cta.description}
-                locale={locale}
-                mobileWords={8}
-                text={contact.cta.mobileDescription ?? contact.cta.description}
-              />
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <ActionButton onClick={() => navTo("contact")} className="w-full justify-center sm:w-auto">
-                  {ui.contactUs}
-                </ActionButton>
-                <ActionButton onClick={() => setShowForm(true)} variant="secondary" className="w-full justify-center sm:w-auto">
-                  {ui.startProject}
-                </ActionButton>
-              </div>
-            </div>
-          </Reveal>
-      </FocusSection>
+        </div>
+      </section>
     </PageShell>
   );
 }

@@ -4,8 +4,8 @@ export { SITE_ORIGIN };
 
 export const PAGE_ROUTES = PAGE_IDS.map((id) => ({ id, path: buildPath(id, "en") }));
 
-export function getPathForPageId(pageId, locale = "en") {
-  return buildPath(pageId, locale);
+export function getPathForPageId(pageId, locale = "en", slug = null) {
+  return buildPath(pageId, locale, slug);
 }
 
 export function getRouteForPath(pathname = "/") {

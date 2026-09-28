@@ -76,9 +76,11 @@ export default function Portfolio({ content, setShowForm }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full"
               >
                 <ProjectCard
                   index={portfolio.projects.indexOf(project)}
+                  locale={locale}
                   project={project}
                   setShowForm={setShowForm}
                   ui={ui}
