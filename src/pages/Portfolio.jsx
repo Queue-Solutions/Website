@@ -29,6 +29,7 @@ export default function Portfolio({ content, setShowForm }) {
           </Reveal>
           <Reveal trigger="mount" delay={0.08}>
             <SectionHeading
+              as="h1"
               align="center"
               locale={locale}
               mobileDescription={portfolio.hero.mobileDescription}

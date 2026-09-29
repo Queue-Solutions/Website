@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import PageShell from "../components/layout/PageShell";
 import ActionButton from "../components/ui/ActionButton";
 import AuditBanner from "../components/ui/AuditBanner";
+import FaqList from "../components/ui/FaqList";
 import ProjectCard from "../components/ui/ProjectCard";
 import ProjectLogoStage from "../components/ui/ProjectLogoStage";
 import Testimonials from "../components/ui/Testimonials";
 import Reveal from "../components/ui/Reveal";
+import { COMPANY_FAQ, FAQ_TITLE } from "../content/company";
 import { PRICING } from "../content/products";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
@@ -201,6 +203,18 @@ export default function Home({ content, navTo, setShowForm }) {
               </Reveal>
             ))}
           </ol>
+        </div>
+      </section>
+
+      {/* FAQ: direct answers, mirrored in the FAQPage structured data */}
+      <section className="px-5 pt-16 sm:px-6 sm:pt-24">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <Reveal className="text-center">
+            <h2 className="text-[1.75rem] font-bold leading-tight text-slate-950 sm:text-4xl">{FAQ_TITLE[locale]}</h2>
+          </Reveal>
+          <Reveal>
+            <FaqList items={COMPANY_FAQ[locale]} />
+          </Reveal>
         </div>
       </section>
 
