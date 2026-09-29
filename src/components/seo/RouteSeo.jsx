@@ -48,7 +48,7 @@ export default function RouteSeo({ content, pageId, slug = null }) {
     });
     upsertMeta('meta[property="og:type"]', {
       property: "og:type",
-      content: "website",
+      content: pageId === "case-study" ? "article" : "website",
     });
     upsertMeta('meta[property="og:title"]', {
       property: "og:title",
@@ -78,7 +78,12 @@ export default function RouteSeo({ content, pageId, slug = null }) {
       property: "og:locale",
       content: locale === "ar" ? "ar_EG" : "en_US",
     });
+    upsertMeta('meta[property="og:locale:alternate"]', {
+      property: "og:locale:alternate",
+      content: locale === "ar" ? "en_US" : "ar_EG",
+    });
     upsertMeta('meta[property="og:image"]', { property: "og:image", content: seo.image });
+    upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: seo.image });
     const structuredData = document.getElementById("structured-data");
     if (structuredData) {
       structuredData.textContent = JSON.stringify(buildStructuredData(locale, pageId, slug));

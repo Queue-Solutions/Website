@@ -30,6 +30,7 @@ export default function Contact({ content, setShowForm }) {
 
             <Reveal delay={0.06}>
               <SectionHeading
+                as="h1"
                 locale={locale}
                 mobileDescription={contact.hero.mobileDescription}
                 mobileTitle={contact.hero.mobileTitle}

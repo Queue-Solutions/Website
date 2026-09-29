@@ -35,6 +35,7 @@ export default function Process({ content, setShowForm }) {
             </div>
 
             <SectionHeading
+              as="h1"
               locale={locale}
               mobileDescription={process.hero.mobileDescription}
               mobileTitle={process.hero.mobileTitle}
