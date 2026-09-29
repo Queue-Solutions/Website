@@ -1,5 +1,6 @@
 import aiAutomationsImage from "../../images/ai-automations.png";
 import aiCallAgentImage from "../../images/Ai-Call-Agent.jpg";
+import { PROCESS_STEPS, SERVICES } from "./company";
 import { getProjects } from "./projects";
 
 const unsplash = (id, width = 1200) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${width}&q=80`;
@@ -18,6 +19,17 @@ const sharedImages = {
   contactHero: unsplash("1616587226960-4a03badbe8bf", 1400),
   contactCta: unsplash("1521791136064-7986c2920216", 1400),
 };
+
+const serviceImages = {
+  brain: sharedImages.serviceAi,
+  headset: sharedImages.serviceCallAgent,
+  mobile: sharedImages.serviceMobile,
+  globe: sharedImages.serviceWeb,
+  cogs: sharedImages.serviceSystem,
+  code: sharedImages.serviceIt,
+};
+
+const withServiceImages = (services) => services.map((service) => ({ ...service, image: serviceImages[service.icon] }));
 
 
 export const SITE_CONTENT = {
@@ -265,48 +277,7 @@ export const SITE_CONTENT = {
           },
         ],
       },
-      services: [
-        {
-          title: "AI Automation",
-          icon: "brain",
-          description:
-            "For the repeated work businesses do every day: lead replies, follow-up, reminders, handoffs, and admin updates.",
-          image: sharedImages.serviceAi,
-        },
-        {
-          title: "AI Call Agent",
-          icon: "headset",
-          description:
-            "An AI voice agent that answers calls, handles common questions, captures lead details, and turns missed calls into new clients.",
-          image: sharedImages.serviceCallAgent,
-        },
-        {
-          title: "Mobile App Development",
-          icon: "mobile",
-          description:
-            "Mobile apps for your customers or your internal team, with clean flows, solid performance, and a look that matches your brand.",
-          image: sharedImages.serviceMobile,
-        },
-        {
-          title: "Website Development",
-          icon: "globe",
-          description: "Websites that feel credible, load fast, and help visitors understand your value quickly.",
-          image: sharedImages.serviceWeb,
-        },
-        {
-          title: "Custom Systems",
-          icon: "cogs",
-          description:
-            "Internal tools, desktop software, and dashboards that give your team one clear place to track work, data, and decisions.",
-          image: sharedImages.serviceSystem,
-        },
-        {
-          title: "IT Services",
-          icon: "code",
-          description: "We support the technical setup behind your work so your tools stay stable, connected, and easy to manage.",
-          image: sharedImages.serviceIt,
-        },
-      ],
+      services: withServiceImages(SERVICES.en),
       capabilitiesTitle: "One partner for the customer-facing side and the operational side",
       capabilitiesMobileTitle: "One partner across the business",
       capabilitiesMobileDescription: "Your website, systems, and automation should all work together.",
@@ -374,28 +345,7 @@ export const SITE_CONTENT = {
       },
       stepsTitle: "From first conversation to launch, the work stays clear",
       stepsMobileTitle: "From first call to launch",
-      steps: [
-        {
-          num: "01",
-          title: "Discovery",
-          description: "We learn how the business works today, where the friction is, and what a better outcome looks like.",
-        },
-        {
-          num: "02",
-          title: "Planning",
-          description: "We shape the structure, decide what matters first, and set a practical path to a strong first release.",
-        },
-        {
-          num: "03",
-          title: "Development",
-          description: "We design, build, connect, and refine the system so it feels polished in use and stable behind the scenes.",
-        },
-        {
-          num: "04",
-          title: "Launch and Support",
-          description: "We launch carefully, fix what needs attention, and support the handoff so the result keeps working after go-live.",
-        },
-      ],
+      steps: PROCESS_STEPS.en,
       cta: {
         eyebrow: "Ready to Start?",
         title: "A good process matters because it protects the result",
@@ -674,44 +624,7 @@ export const SITE_CONTENT = {
           },
         ],
       },
-      services: [
-        {
-          title: "الأتمتة بالذكاء الاصطناعي",
-          icon: "brain",
-          description: "للمهام التي تتكرر كل يوم: الرد على العملاء، والمتابعة، والتذكيرات، وتسليم المهام، والتحديثات الإدارية.",
-          image: sharedImages.serviceAi,
-        },
-        {
-          title: "وكيل المكالمات الذكي",
-          icon: "headset",
-          description: "وكيل صوتي يرد على المكالمات، ويجيب عن الأسئلة الشائعة، ويسجل بيانات العميل، ويحوّل المكالمات الفائتة إلى عملاء جدد.",
-          image: sharedImages.serviceCallAgent,
-        },
-        {
-          title: "تطوير تطبيقات الجوال",
-          icon: "mobile",
-          description: "تطبيقات لعملائك أو لفريقك الداخلي، بتجربة استخدام سلسة وأداء قوي وهوية تعكس علامتك التجارية.",
-          image: sharedImages.serviceMobile,
-        },
-        {
-          title: "تطوير المواقع الإلكترونية",
-          icon: "globe",
-          description: "مواقع موثوقة وسريعة، تساعد الزائر على فهم قيمة ما تقدمه في ثوانٍ.",
-          image: sharedImages.serviceWeb,
-        },
-        {
-          title: "الأنظمة المخصصة",
-          icon: "cogs",
-          description: "أدوات داخلية وبرامج سطح مكتب ولوحات تحكم تمنح فريقك مكانًا واحدًا واضحًا لمتابعة العمل والبيانات والقرارات.",
-          image: sharedImages.serviceSystem,
-        },
-        {
-          title: "خدمات تقنية المعلومات",
-          icon: "code",
-          description: "ندعم البنية التقنية لأعمالك لتبقى أدواتك مستقرة ومترابطة وسهلة الإدارة.",
-          image: sharedImages.serviceIt,
-        },
-      ],
+      services: withServiceImages(SERVICES.ar),
       capabilitiesTitle: "شريك واحد لواجهة أعمالك أمام العملاء ولعملياتك الداخلية",
       capabilitiesMobileTitle: "شريك واحد لكل احتياجاتك",
       capabilitiesMobileDescription: "الموقع والنظام والأتمتة يجب أن تعمل معًا.",
@@ -779,28 +692,7 @@ export const SITE_CONTENT = {
       },
       stepsTitle: "من أول محادثة حتى الإطلاق، الصورة واضحة",
       stepsMobileTitle: "من أول محادثة حتى الإطلاق",
-      steps: [
-        {
-          num: "01",
-          title: "الاستكشاف",
-          description: "نفهم كيف يعمل نشاطك اليوم، وأين تكمن نقاط التعطل، وما النتيجة التي تعتبرها نجاحًا.",
-        },
-        {
-          num: "02",
-          title: "التخطيط",
-          description: "نضع الهيكل، ونحدد الأولويات، ونرسم أقصر طريق إلى إصدار أول قوي.",
-        },
-        {
-          num: "03",
-          title: "التطوير",
-          description: "نصمم ونبني ونربط الأنظمة ونحسّنها، ليكون المنتج سلسًا في الاستخدام ومستقرًا من الداخل.",
-        },
-        {
-          num: "04",
-          title: "الإطلاق والدعم",
-          description: "نطلق المشروع بعناية، ونعالج ما يحتاج إلى تحسين، ونواصل الدعم ليستمر النجاح بعد التسليم.",
-        },
-      ],
+      steps: PROCESS_STEPS.ar,
       cta: {
         eyebrow: "هل أنت مستعد للبدء؟",
         title: "المنهجية الجيدة هي ما يحمي النتيجة",
