@@ -2,6 +2,7 @@ import ExpandableText from "./ExpandableText";
 
 export default function SectionHeading({
   align = "left",
+  as = "h2",
   className = "",
   description,
   descriptionClassName = "",
@@ -13,6 +14,7 @@ export default function SectionHeading({
   title,
   titleClassName = "",
 }) {
+  const Heading = as;
   const alignClassName =
     align === "center"
       ? "mx-auto max-w-[22rem] text-center sm:max-w-xl md:max-w-3xl"
@@ -26,10 +28,10 @@ export default function SectionHeading({
           {eyebrow}
         </p>
       ) : null}
-      <h2 className={`text-[1.55rem] font-bold leading-[1.08] text-slate-950 sm:text-4xl lg:text-5xl ${titleClassName}`.trim()}>
+      <Heading className={`text-[1.55rem] font-bold leading-[1.08] text-slate-950 sm:text-4xl lg:text-5xl ${titleClassName}`.trim()}>
         <span className="md:hidden">{mobileTitle ?? title}</span>
         <span className="hidden md:inline">{title}</span>
-      </h2>
+      </Heading>
       {description ? (
         <ExpandableText
           className={`max-w-[21rem] text-[15px] leading-7 text-slate-600 sm:max-w-xl sm:text-base md:text-lg ${descriptionAlignClassName} ${descriptionClassName}`.trim()}

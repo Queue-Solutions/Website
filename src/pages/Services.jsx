@@ -32,6 +32,7 @@ export default function Services({ content, navTo, setShowForm }) {
           <Reveal className="mx-auto h-full w-full max-w-xl rounded-[2rem] border border-slate-300/70 bg-slate-100/78 p-4 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur sm:p-8 md:max-w-none md:p-10">
             <div className="flex h-full flex-col justify-center space-y-6 sm:space-y-8">
             <SectionHeading
+              as="h1"
               locale={locale}
               mobileDescription={servicesContent.hero.mobileDescription}
               mobileTitle={servicesContent.hero.mobileTitle}

@@ -1,4 +1,5 @@
 // Plain data (no Vite imports) so scripts/prerender.mjs can read it at build time too.
+import { COMPANY, COMPANY_FAQ, PROCESS_STEPS, SERVICES } from "./company.js";
 import { getProjects, PROJECT_IDS } from "./projects.js";
 import { LANDING_PAGES, PRICING, PRODUCT_COPY } from "./products.js";
 
@@ -134,32 +135,152 @@ export function getSeo(locale, pageId, slug = null) {
 }
 
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
+const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
+
+const BREADCRUMB_LABELS = {
+  en: { home: "Home", services: "Services", portfolio: "Portfolio", process: "Process", contact: "Contact" },
+  ar: { home: "الرئيسية", services: "خدماتنا", portfolio: "أعمالنا", process: "منهجية العمل", contact: "تواصل معنا" },
+};
+
+const WEBPAGE_TYPES = { contact: "ContactPage", portfolio: "CollectionPage", "case-study": "ItemPage" };
+
+// Home > [Portfolio >] current page, using the visible names people and AI assistants would cite.
+export function getBreadcrumbs(locale, pageId, slug = null) {
+  const labels = BREADCRUMB_LABELS[locale];
+  const crumbs = [{ name: labels.home, path: buildPath("home", locale) }];
+  if (pageId === "home") return crumbs;
+  if (pageId === "case-study") {
+    crumbs.push({ name: labels.portfolio, path: buildPath("portfolio", locale) });
+    crumbs.push({ name: getProjects(locale).find((item) => item.id === slug).title, path: buildPath(pageId, locale, slug) });
+  } else if (pageId === "landing") {
+    crumbs.push({ name: PRODUCT_COPY[locale][slug].eyebrow, path: buildPath(pageId, locale, slug) });
+  } else {
+    crumbs.push({ name: labels[pageId], path: buildPath(pageId, locale) });
+  }
+  return crumbs;
+}
+
+const faqPage = (items, url) => ({
+  "@type": "FAQPage",
+  "@id": `${url}#faq`,
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+});
+
+const serviceNode = (service, locale) => ({
+  "@type": "Service",
+  "@id": `${SITE_ORIGIN}/#service-${service.id}`,
+  name: service.title,
+  serviceType: SERVICES.en.find((item) => item.id === service.id).title,
+  description: service.description,
+  provider: { "@id": ORGANIZATION_ID },
+  areaServed: COMPANY.areaServed.map((area) => ({ "@type": "Country", name: area[locale] })),
+  url: absoluteUrl(buildPath("services", locale)),
+});
 
 export function buildStructuredData(locale, pageId, slug = null) {
   const seo = getSeo(locale, pageId, slug);
   const url = absoluteUrl(buildPath(pageId, locale, slug));
   const inLanguage = locale === "ar" ? "ar-EG" : "en";
+  const breadcrumbs = getBreadcrumbs(locale, pageId, slug);
   const graph = [
     {
       "@type": "ProfessionalService",
       "@id": ORGANIZATION_ID,
       name: SITE_NAME,
+      alternateName: "Queue",
       url: SITE_ORIGIN,
-      logo: `${SITE_ORIGIN}/icon-512.png`,
+      logo: { "@type": "ImageObject", url: `${SITE_ORIGIN}/icon-512.png`, width: 512, height: 512 },
       image: OG_IMAGE,
-      email: "queuesolutions25@gmail.com",
-      telephone: "+201127435060",
+      email: COMPANY.email,
+      telephone: COMPANY.telephone,
       priceRange: "EGP",
-      address: { "@type": "PostalAddress", addressCountry: "EG" },
-      areaServed: ["EG", "SA", "AE", "KW", "QA"],
+      address: { "@type": "PostalAddress", addressCountry: COMPANY.country },
+      areaServed: COMPANY.areaServed.map((area) => ({ "@type": "Country", name: area.en, identifier: area.code })),
       knowsLanguage: ["ar", "en"],
+      knowsAbout: COMPANY.knowsAbout,
+      slogan: "Where your ideas come true",
       description: SEO[locale].home.description,
-      sameAs: ["https://www.instagram.com/queue.solutions/", "https://www.facebook.com/profile.php?id=61585024646035"],
-      contactPoint: { "@type": "ContactPoint", telephone: "+201127435060", contactType: "sales", availableLanguage: ["Arabic", "English"] },
+      sameAs: COMPANY.sameAs,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: COMPANY.telephone,
+        email: COMPANY.email,
+        url: COMPANY.whatsappHref,
+        contactType: "sales",
+        areaServed: COMPANY.areaServed.map((area) => area.code),
+        availableLanguage: ["Arabic", "English"],
+      },
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: locale === "ar" ? "خدمات Queue Solutions" : "Queue Solutions services",
+        itemListElement: SERVICES[locale].map((service) => ({
+          "@type": "Offer",
+          itemOffered: { "@id": `${SITE_ORIGIN}/#service-${service.id}`, "@type": "Service", name: service.title },
+        })),
+      },
     },
-    { "@type": "WebSite", "@id": `${SITE_ORIGIN}/#website`, url: SITE_ORIGIN, name: SITE_NAME, inLanguage, publisher: { "@id": ORGANIZATION_ID } },
-    { "@type": "WebPage", "@id": `${url}#webpage`, url, name: seo.title, description: seo.description, inLanguage, isPartOf: { "@id": `${SITE_ORIGIN}/#website` } },
+    {
+      "@type": "WebSite",
+      "@id": WEBSITE_ID,
+      url: SITE_ORIGIN,
+      name: SITE_NAME,
+      description: SEO[locale].home.description,
+      inLanguage: ["en", "ar-EG"],
+      publisher: { "@id": ORGANIZATION_ID },
+    },
+    {
+      "@type": WEBPAGE_TYPES[pageId] ?? "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: seo.title,
+      description: seo.description,
+      inLanguage,
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": ORGANIZATION_ID },
+      primaryImageOfPage: { "@type": "ImageObject", url: seo.image },
+      ...(breadcrumbs.length > 1 ? { breadcrumb: { "@id": `${url}#breadcrumb` } } : {}),
+    },
   ];
+
+  if (breadcrumbs.length > 1) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
+      itemListElement: breadcrumbs.map((crumb, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: crumb.name,
+        item: absoluteUrl(crumb.path),
+      })),
+    });
+  }
+
+  if (pageId === "home") {
+    graph.push(faqPage(COMPANY_FAQ[locale], url));
+  }
+
+  if (pageId === "services") {
+    graph.push(...SERVICES[locale].map((service) => serviceNode(service, locale)));
+  }
+
+  if (pageId === "process") {
+    graph.push({
+      "@type": "HowTo",
+      name: seo.title,
+      description: seo.description,
+      inLanguage,
+      step: PROCESS_STEPS[locale].map((step, index) => ({
+        "@type": "HowToStep",
+        position: index + 1,
+        name: step.title,
+        text: step.description,
+      })),
+    });
+  }
 
   const projects = getProjects(locale);
   const softwareFor = (project) => ({
@@ -216,14 +337,7 @@ export function buildStructuredData(locale, pageId, slug = null) {
         url,
       })),
     });
-    graph.push({
-      "@type": "FAQPage",
-      mainEntity: copy.faq.map((item) => ({
-        "@type": "Question",
-        name: item.q,
-        acceptedAnswer: { "@type": "Answer", text: item.a },
-      })),
-    });
+    graph.push(faqPage(copy.faq, url));
   }
 
   return { "@context": "https://schema.org", "@graph": graph };

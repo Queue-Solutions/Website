@@ -1,10 +1,11 @@
 // Post-build step: writes one HTML file per page and language with its own title,
-// description, canonical, hreflang and structured data, plus the sitemap.
+// description, canonical, hreflang, structured data and static content, plus the sitemap and llms.txt.
 // Without this, GitHub Pages answers every URL except "/" with a 404 status.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { absoluteUrl, ALL_ROUTES, buildPath, buildStructuredData, getSeo, LOCALES } from "../src/content/seo.js";
+import { renderLlmsTxt, renderStaticPage } from "./static-content.mjs";
 
 const dist = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
 const template = readFileSync(join(dist, "index.html"), "utf8");
@@ -42,6 +43,7 @@ for (const locale of LOCALES) {
     html = setAttr(html, 'link rel="alternate" hreflang="ar"', "href", alternates.ar);
     html = setAttr(html, 'link rel="alternate" hreflang="x-default"', "href", alternates.en);
     html = setAttr(html, 'meta property="og:locale"', "content", locale === "ar" ? "ar_EG" : "en_US");
+    html = setAttr(html, 'meta property="og:locale:alternate"', "content", locale === "ar" ? "en_US" : "ar_EG");
     html = setAttr(html, 'meta property="og:title"', "content", title);
     html = setAttr(html, 'meta property="og:description"', "content", description);
     html = setAttr(html, 'meta property="og:url"', "content", url);
@@ -50,6 +52,8 @@ for (const locale of LOCALES) {
     html = setAttr(html, 'meta property="og:image"', "content", image);
     html = setAttr(html, 'meta name="twitter:image"', "content", image);
     if (pageId === "case-study") html = html.replace('<meta property="og:type" content="website" />', '<meta property="og:type" content="article" />');
+    html = html.replace(/<noscript>[\s\S]*?<\/noscript>\s*/, "");
+    html = html.replace('<div id="root"></div>', () => `<div id="root">${renderStaticPage(locale, pageId, slug)}</div>`);
     html = html.replace(
       /<script type="application\/ld\+json" id="structured-data">[\s\S]*?<\/script>/,
       `<script type="application/ld+json" id="structured-data">${JSON.stringify(buildStructuredData(locale, pageId, slug)).replace(/</g, "\\u003c")}</script>`,
@@ -81,3 +85,7 @@ ${sitemapEntries.join("\n")}
 `,
 );
 console.log(`prerender: sitemap.xml with ${sitemapEntries.length} URLs`);
+
+writeFileSync(join(dist, "llms.txt"), renderLlmsTxt());
+writeFileSync(join(dist, "llms-full.txt"), renderLlmsTxt({ full: true }));
+console.log("prerender: llms.txt and llms-full.txt");
