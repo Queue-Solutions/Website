@@ -66,6 +66,19 @@
 }
 
 @layer utilities {
+  .animate-ticker {
+    animation: ticker 45s linear infinite;
+  }
+
+  @keyframes ticker {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   .text-sm {
     @apply leading-relaxed;
   }
@@ -123,5 +136,9 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .animate-ticker {
+    animation: none;
   }
 }

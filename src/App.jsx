@@ -4,7 +4,6 @@ import { BrowserRouter, Navigate, useLocation, useNavigate } from "react-router-
 import ScrollManager from "./components/routing/ScrollManager";
 import RouteSeo from "./components/seo/RouteSeo";
 import ScrollToTopButton from "./components/layout/ScrollToTopButton";
-import TrialPromo from "./components/layout/TrialPromo";
 import WhatsAppButton from "./components/layout/WhatsAppButton";
 import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
@@ -94,7 +93,7 @@ function AppShell() {
       />
       )}
 
-      <main className={currentPage === "home" || isCampaign ? "min-h-screen" : "min-h-screen pt-22 sm:pt-28"}>
+      <main className={currentPage === "home" || isCampaign ? "min-h-screen" : "min-h-screen pt-31 sm:pt-38"}>
         <AnimatePresence mode="wait">
           <Motion.div
             key={location.pathname}
@@ -115,7 +114,6 @@ function AppShell() {
           <SiteFooter content={content} />
           <WhatsAppButton content={content} />
           <ScrollToTopButton />
-          <TrialPromo locale={locale} />
         </>
       )}
 

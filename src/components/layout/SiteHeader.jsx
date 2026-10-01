@@ -4,6 +4,7 @@ import { FaLanguage } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
 import { getPathForPageId } from "../../lib/routes";
 import ActionButton from "../ui/ActionButton";
+import TrialTicker from "./TrialTicker";
 
 export default function SiteHeader({
   content,
@@ -32,7 +33,9 @@ export default function SiteHeader({
   });
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-2.5 pt-2.5 sm:px-6 sm:pt-4">
+    <header className="fixed inset-x-0 top-0 z-50">
+      <TrialTicker locale={locale} />
+      <div className="px-2.5 pt-2.5 sm:px-6 sm:pt-4">
       <div
         className={`mx-auto max-w-7xl rounded-[1.75rem] border transition-all md:backdrop-blur ${
           scrolled
@@ -174,6 +177,7 @@ export default function SiteHeader({
             />
           </div>
         </div>
+      </div>
       </div>
     </header>
   );
