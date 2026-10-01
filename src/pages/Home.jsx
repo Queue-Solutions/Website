@@ -11,6 +11,7 @@ import Testimonials from "../components/ui/Testimonials";
 import Reveal from "../components/ui/Reveal";
 import { COMPANY_FAQ, FAQ_TITLE } from "../content/company";
 import { PRICING } from "../content/products";
+import { TRIAL_COPY } from "../content/trial";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
 import { formatPrice } from "../lib/format";
@@ -177,17 +178,28 @@ export default function Home({ content, navTo, setShowForm }) {
                         >
                           {ui.pricing.seePricing}
                         </Link>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            trackLeadClick("demo_request", `${project.id}:home`);
-                            setShowForm(`${ui.modal.demoPrefix} ${project.title}.`);
-                          }}
-                          className="inline-flex h-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold text-white transition hover:brightness-110"
-                          style={{ backgroundColor: project.accent }}
-                        >
-                          {ui.requestDemo}
-                        </button>
+                        {project.id === "molarbear" ? (
+                          <Link
+                            to={getPathForPageId("trial", locale)}
+                            onClick={() => trackLeadClick("molarbear_trial", "home")}
+                            className="inline-flex h-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold text-white transition hover:brightness-110"
+                            style={{ backgroundColor: project.accent }}
+                          >
+                            {TRIAL_COPY[locale].headlineTop}
+                          </Link>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              trackLeadClick("demo_request", `${project.id}:home`);
+                              setShowForm(`${ui.modal.demoPrefix} ${project.title}.`);
+                            }}
+                            className="inline-flex h-11 items-center justify-center rounded-full px-3 text-[13px] font-semibold text-white transition hover:brightness-110"
+                            style={{ backgroundColor: project.accent }}
+                          >
+                            {ui.requestDemo}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </article>

@@ -2,6 +2,7 @@
 import { COMPANY, COMPANY_FAQ, PROCESS_STEPS, SERVICES } from "./company.js";
 import { getProjects, PROJECT_IDS } from "./projects.js";
 import { LANDING_PAGES, PRICING, PRODUCT_COPY } from "./products.js";
+import { TRIAL_COPY, TRIAL_DOWNLOAD } from "./trial.js";
 
 export const SITE_ORIGIN = "https://queuesolutions.org";
 export const SITE_NAME = "Queue Solutions";
@@ -68,13 +69,14 @@ export const PAGE_IDS = ["home", "services", "portfolio", "process", "contact"];
 export const LOCALES = ["en", "ar"];
 export const LANDING_SLUGS = Object.keys(LANDING_PAGES);
 
-const PAGE_SLUGS = { home: "", services: "services", portfolio: "portfolio", process: "process", contact: "contact" };
+const PAGE_SLUGS = { home: "", services: "services", portfolio: "portfolio", process: "process", contact: "contact", trial: "molarbear-trial" };
 
 // Every indexable route: the five main pages, one case study per project, and the product landing pages.
 export const ALL_ROUTES = [
   ...PAGE_IDS.map((pageId) => ({ pageId, slug: null })),
   ...PROJECT_IDS.map((slug) => ({ pageId: "case-study", slug })),
   ...LANDING_SLUGS.map((slug) => ({ pageId: "landing", slug })),
+  { pageId: "trial", slug: null },
 ];
 
 export function buildPath(pageId, locale = "en", slug = null) {
@@ -131,6 +133,10 @@ export function getSeo(locale, pageId, slug = null) {
     const copy = PRODUCT_COPY[locale][slug];
     return { title: copy.seoTitle, description: copy.seoDescription, image: absoluteUrl(LANDING_PAGES[slug].poster) };
   }
+  if (pageId === "trial") {
+    const copy = TRIAL_COPY[locale];
+    return { title: copy.seoTitle, description: copy.seoDescription, image: absoluteUrl("/case-studies/molarbear-clinic-flow.webp") };
+  }
   return { ...(SEO[locale][pageId] ?? SEO[locale].home), image: OG_IMAGE };
 }
 
@@ -138,8 +144,8 @@ const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
 
 const BREADCRUMB_LABELS = {
-  en: { home: "Home", services: "Services", portfolio: "Portfolio", process: "Process", contact: "Contact" },
-  ar: { home: "الرئيسية", services: "خدماتنا", portfolio: "أعمالنا", process: "منهجية العمل", contact: "تواصل معنا" },
+  en: { home: "Home", services: "Services", portfolio: "Portfolio", process: "Process", contact: "Contact", trial: "MolarBear free trial" },
+  ar: { home: "الرئيسية", services: "خدماتنا", portfolio: "أعمالنا", process: "منهجية العمل", contact: "تواصل معنا", trial: "تجربة MolarBear المجانية" },
 };
 
 const WEBPAGE_TYPES = { contact: "ContactPage", portfolio: "CollectionPage", "case-study": "ItemPage" };
@@ -319,6 +325,29 @@ export function buildStructuredData(locale, pageId, slug = null) {
       about: softwareFor(project),
       mainEntityOfPage: `${url}#webpage`,
     });
+  }
+
+  if (pageId === "trial") {
+    graph.push({
+      "@type": "SoftwareApplication",
+      "@id": `${url}#software`,
+      name: "MolarBear",
+      description: TRIAL_COPY[locale].seoDescription,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Windows 10, Windows 11",
+      softwareVersion: TRIAL_DOWNLOAD.version,
+      inLanguage: ["ar", "en"],
+      creator: { "@id": ORGANIZATION_ID },
+      offers: {
+        "@type": "Offer",
+        name: locale === "ar" ? "تجربة مجانية لمدة 14 يومًا" : "14-day free trial",
+        price: 0,
+        priceCurrency: "EGP",
+        availability: "https://schema.org/InStock",
+        url,
+      },
+    });
+    graph.push(faqPage(TRIAL_COPY[locale].faq, url));
   }
 
   if (pageId === "landing") {

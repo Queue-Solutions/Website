@@ -7,6 +7,7 @@ import DemoVideo from "../components/ui/DemoVideo";
 import ProjectLogoStage from "../components/ui/ProjectLogoStage";
 import Reveal from "../components/ui/Reveal";
 import Testimonials from "../components/ui/Testimonials";
+import TrialBanner from "../components/ui/TrialBanner";
 import { PRICING } from "../content/products";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
@@ -103,6 +104,14 @@ export default function CaseStudy({ content, setShowForm, slug }) {
           </dl>
         </div>
       </section>
+
+      {project.id === "molarbear" ? (
+        <section className="px-5 pb-12 sm:px-6 sm:pb-16">
+          <div className="mx-auto max-w-6xl">
+            <TrialBanner locale={locale} source="case_study" />
+          </div>
+        </section>
+      ) : null}
 
       {/* Challenge and solution, before and after */}
       <section className="border-y border-slate-200/70 bg-white/70 px-5 py-14 sm:px-6 sm:py-20">

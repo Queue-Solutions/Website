@@ -7,6 +7,7 @@ import FaqList from "../components/ui/FaqList";
 import PricingPlans from "../components/ui/PricingPlans";
 import Reveal from "../components/ui/Reveal";
 import Testimonials from "../components/ui/Testimonials";
+import TrialBanner from "../components/ui/TrialBanner";
 import { LANDING_PAGES, PRODUCT_COPY } from "../content/products";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
@@ -71,6 +72,14 @@ export default function ProductLanding({ content, setShowForm, slug }) {
           </Reveal>
         </div>
       </section>
+
+      {project.id === "molarbear" ? (
+        <section className="px-5 pb-14 sm:px-6 sm:pb-16">
+          <div className="mx-auto max-w-6xl">
+            <TrialBanner locale={locale} source="dental_landing" />
+          </div>
+        </section>
+      ) : null}
 
       {/* Features */}
       <section className="border-y border-slate-200/70 bg-white/70 px-5 py-14 sm:px-6 sm:py-20">

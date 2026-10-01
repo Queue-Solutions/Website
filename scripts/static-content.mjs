@@ -4,6 +4,7 @@ import { COMPANY, COMPANY_FAQ, FAQ_TITLE, PROCESS_STEPS, SERVICES } from "../src
 import { LANDING_PAGES, PRICING, PRODUCT_COPY } from "../src/content/products.js";
 import { getProjects } from "../src/content/projects.js";
 import { absoluteUrl, buildPath, getBreadcrumbs, getSeo, LANDING_SLUGS, PAGE_IDS, SEO, SITE_NAME } from "../src/content/seo.js";
+import { TRIAL_COPY } from "../src/content/trial.js";
 
 const LABELS = {
   en: {
@@ -176,6 +177,18 @@ function pageBody(locale, pageId, slug) {
       return [intro, workSection(locale)].join("");
     case "process":
       return [intro, processSection(locale)].join("");
+    case "trial": {
+      const copy = TRIAL_COPY[locale];
+      return [
+        `<p>${esc(copy.idcTitle)} · ${esc(copy.idcDates)}</p>`,
+        `<h1>${esc(`${copy.headlineTop} ${copy.headlineBottom}`)}</h1>`,
+        `<p>${esc(copy.subheadline)} ${esc(copy.description)}</p>`,
+        `<p>${esc(copy.noCard)}</p>`,
+        `<section><h2>${esc(copy.featuresTitle)}</h2>${copy.features.map((item) => `<h3>${esc(item.title)}</h3><p>${esc(item.text)}</p>`).join("")}</section>`,
+        `<section><h2>${esc(copy.howTitle)}</h2><ol>${copy.how.map((item) => `<li><strong>${esc(item.title)}</strong>: ${esc(item.text)}</li>`).join("")}</ol></section>`,
+        faqSection(copy.faqTitle, copy.faq),
+      ].join("");
+    }
     default:
       return intro;
   }

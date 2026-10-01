@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, useLocation, useNavigate } from "react-router-
 import ScrollManager from "./components/routing/ScrollManager";
 import RouteSeo from "./components/seo/RouteSeo";
 import ScrollToTopButton from "./components/layout/ScrollToTopButton";
+import TrialPromo from "./components/layout/TrialPromo";
 import WhatsAppButton from "./components/layout/WhatsAppButton";
 import SiteFooter from "./components/layout/SiteFooter";
 import SiteHeader from "./components/layout/SiteHeader";
@@ -21,6 +22,7 @@ const PAGES = {
   contact: lazy(() => import("./pages/Contact")),
   "case-study": lazy(() => import("./pages/CaseStudy")),
   landing: lazy(() => import("./pages/ProductLanding")),
+  trial: lazy(() => import("./pages/MolarBearTrial")),
 };
 
 export default function App() {
@@ -45,6 +47,7 @@ function AppShell() {
   const content = SITE_CONTENT[locale];
   const isRtl = content.direction === "rtl";
   const Page = PAGES[currentPage];
+  const isCampaign = currentPage === "trial";
 
   useEffect(() => {
     document.documentElement.lang = locale === "ar" ? "ar-EG" : "en";
@@ -79,6 +82,8 @@ function AppShell() {
       <RouteSeo content={content} pageId={currentPage} slug={slug} />
       <ScrollManager />
 
+      {/* The trial page is a standalone campaign page with its own minimal header and footer. */}
+      {isCampaign ? null : (
       <SiteHeader
         content={content}
         locale={locale}
@@ -87,8 +92,9 @@ function AppShell() {
         setMobileMenuOpen={setMobileMenuOpen}
         setShowForm={setShowForm}
       />
+      )}
 
-      <main className={currentPage === "home" ? "min-h-screen" : "min-h-screen pt-22 sm:pt-28"}>
+      <main className={currentPage === "home" || isCampaign ? "min-h-screen" : "min-h-screen pt-22 sm:pt-28"}>
         <AnimatePresence mode="wait">
           <Motion.div
             key={location.pathname}
@@ -104,9 +110,14 @@ function AppShell() {
         </AnimatePresence>
       </main>
 
-      <SiteFooter content={content} />
-      <WhatsAppButton content={content} />
-      <ScrollToTopButton />
+      {isCampaign ? null : (
+        <>
+          <SiteFooter content={content} />
+          <WhatsAppButton content={content} />
+          <ScrollToTopButton />
+          <TrialPromo locale={locale} />
+        </>
+      )}
 
       <AnimatePresence initial={false}>
         {localeFxKey ? (
