@@ -42,7 +42,7 @@ export default function Home({ content, navTo, setShowForm }) {
   return (
     <PageShell>
       {/* Hero: on phones the first screen shows only the name; the pitch and buttons follow on scroll */}
-      <section className="relative flex min-h-[100svh] items-center px-5 pb-16 pt-34 sm:min-h-[88svh] sm:pt-42">
+      <section className="relative flex min-h-[100svh] items-center px-5 pb-16 pt-33 sm:min-h-[88svh] sm:pt-41">
         <div className="mx-auto w-full max-w-5xl text-center">
           <Motion.h1
             initial={{ opacity: 0, y: 24 }}
