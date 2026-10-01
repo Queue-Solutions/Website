@@ -93,7 +93,7 @@ function AppShell() {
       />
       )}
 
-      <main className={currentPage === "home" || isCampaign ? "min-h-screen" : "min-h-screen pt-31 sm:pt-38"}>
+      <main className={currentPage === "home" || isCampaign ? "min-h-screen" : "min-h-screen pt-32 sm:pt-38"}>
         <AnimatePresence mode="wait">
           <Motion.div
             key={location.pathname}
