@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  FaBoxes,
   FaCalendarAlt,
-  FaChartBar,
   FaCheck,
   FaCheckCircle,
-  FaDesktop,
   FaDownload,
   FaEnvelope,
   FaFacebookF,
   FaGift,
   FaInstagram,
+  FaMoneyBillWave,
   FaPhoneAlt,
-  FaUsers,
+  FaTooth,
+  FaUserFriends,
   FaWhatsapp,
   FaWindows,
+  FaXRay,
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import FaqList from "../components/ui/FaqList";
@@ -34,7 +36,14 @@ import { getPathForPageId } from "../lib/routes";
 const ACCENT = "#2f7d8c";
 const BEAR = "/portfolio/molarbear.webp";
 const REGISTERED_KEY = "molarbear-trial-registered";
-const FEATURE_ICONS = { calendar: FaCalendarAlt, users: FaUsers, desktop: FaDesktop, chart: FaChartBar };
+const FEATURE_ICONS = {
+  patients: FaUserFriends,
+  calendar: FaCalendarAlt,
+  tooth: FaTooth,
+  xray: FaXRay,
+  payments: FaMoneyBillWave,
+  inventory: FaBoxes,
+};
 
 const inputClassName =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 placeholder-slate-400 transition focus:border-[#2f7d8c] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#2f7d8c]/10";
@@ -104,13 +113,9 @@ export default function MolarBearTrial({ content }) {
     setErrors((previous) => ({ ...previous, [field]: "", submit: "" }));
   };
 
-  const toggleFollow = (platform) => {
-    // Ticking the box opens the page so the visitor can follow; unticking just clears it.
-    if (!follows[platform]) {
-      window.open(social[platform], "_blank", "noopener");
-      trackCampaignEvent("social_follow_click", { platform });
-    }
-    setFollows((previous) => ({ ...previous, [platform]: !previous[platform] }));
+  const markFollow = (platform) => {
+    trackCampaignEvent("social_follow_click", { platform });
+    setFollows((previous) => ({ ...previous, [platform]: true }));
   };
 
   const handleDownloadClick = (source) => {
@@ -213,14 +218,21 @@ export default function MolarBearTrial({ content }) {
           <div className="text-center lg:pt-6 lg:text-start">
             <div className="relative mx-auto inline-block lg:mx-0">
               <div className="absolute inset-0 -z-10 scale-125 rounded-full bg-[#2f7d8c]/15 blur-2xl" aria-hidden="true" />
-              <img src={BEAR} alt="MolarBear" className="h-28 w-28 rounded-[2rem] border-4 border-white bg-white object-cover shadow-[0_20px_50px_rgba(47,125,140,0.25)] sm:h-36 sm:w-36" />
+              <img src={BEAR} alt="MolarBear" className="h-20 w-20 rounded-[1.5rem] border-4 border-white bg-white object-cover shadow-[0_20px_50px_rgba(47,125,140,0.25)] sm:h-32 sm:w-32 sm:rounded-[2rem]" />
             </div>
 
-            <h1 className="mt-5 font-bold leading-[1.02]">
-              <span className="block bg-gradient-to-r from-[#1f5f6b] via-[#2f7d8c] to-[#4fb3c1] bg-clip-text pb-1 text-[3.1rem] uppercase text-transparent sm:text-7xl">
-                {copy.headlineTop}
+            <div className="mt-4">
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-amber-800">
+                <FaGift className="text-amber-500" /> {copy.heroBadge}
               </span>
-              <span className="mt-1 block text-[1.6rem] text-slate-950 sm:text-4xl">{copy.headlineBottom}</span>
+            </div>
+
+            <h1 className="mt-3 font-bold leading-[1.02]">
+              <span className="block text-[1.7rem] uppercase text-slate-950 sm:text-4xl">{copy.heroKicker}</span>
+              <span className="mt-1 block whitespace-nowrap text-[2.4rem] uppercase min-[400px]:text-[2.7rem] sm:text-7xl">
+                <span className="bg-gradient-to-r from-[#1f5f6b] via-[#2f7d8c] to-[#4fb3c1] bg-clip-text pb-1 text-transparent">{copy.heroOffer}</span>{" "}
+                <span aria-hidden="true">🐻</span>
+              </span>
             </h1>
             <p className="mt-4 text-lg font-semibold text-slate-900 sm:text-xl">{copy.subheadline}</p>
             <p className="mx-auto mt-2 max-w-xl text-[15px] leading-7 text-slate-600 sm:text-base lg:mx-0">{copy.description}</p>
@@ -229,7 +241,7 @@ export default function MolarBearTrial({ content }) {
               <TrialButton location="hero" className="w-full sm:w-auto">
                 {copy.cta}
               </TrialButton>
-              <p className="text-sm font-medium text-slate-500">{copy.noCard}</p>
+              <p className="text-sm font-medium text-slate-500">{copy.ctaNote}</p>
             </div>
 
             <div className="mx-auto mt-6 flex max-w-md items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-start lg:mx-0">
@@ -297,7 +309,10 @@ export default function MolarBearTrial({ content }) {
                 </div>
               ) : (
                 <form noValidate onSubmit={handleSubmit} onFocus={markFormStart} className="space-y-4 p-6 text-start sm:p-8">
-                  <h2 className="text-xl font-bold uppercase tracking-wide text-slate-950 sm:text-2xl">{copy.formTitle}</h2>
+                  <div>
+                    <h2 className="text-xl font-bold uppercase tracking-wide text-slate-950 sm:text-2xl">{copy.formTitle}</h2>
+                    <p className="mt-1 text-[15px] text-slate-500">{copy.formSubtitle}</p>
+                  </div>
 
                   <label className="block">
                     {label(copy.fields.name)}
@@ -345,41 +360,6 @@ export default function MolarBearTrial({ content }) {
                     <input className={inputClassName} value={form.city} onChange={update("city")} placeholder={copy.placeholders.city} autoComplete="address-level2" />
                   </label>
 
-                  <div role="group" aria-labelledby="trial-social-title" className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                    <p id="trial-social-title" className="text-sm font-semibold text-slate-700">{copy.socialTitle}</p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {[
-                        { platform: "facebook", text: copy.socialFacebook, icon: FaFacebookF, color: "#1877f2" },
-                        { platform: "instagram", text: copy.socialInstagram, icon: FaInstagram, color: "#e1306c" },
-                      ].map(({ platform, text, icon, color }) => {
-                        const Icon = icon;
-                        return (
-                        <button
-                          key={platform}
-                          type="button"
-                          role="checkbox"
-                          aria-checked={follows[platform]}
-                          onClick={() => toggleFollow(platform)}
-                          className={`flex items-center gap-3 rounded-xl border bg-white px-3 py-2.5 text-start text-sm font-semibold transition ${
-                            follows[platform] ? "border-emerald-300 text-slate-900" : "border-slate-200 text-slate-700 hover:border-slate-300"
-                          }`}
-                        >
-                          <span
-                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] ${
-                              follows[platform] ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-300 bg-white text-transparent"
-                            }`}
-                          >
-                            <FaCheck />
-                          </span>
-                          <Icon className="shrink-0 text-base" style={{ color }} />
-                          {text}
-                        </button>
-                        );
-                      })}
-                    </div>
-                    <p className="mt-2 text-xs text-slate-400">{copy.socialHint}</p>
-                  </div>
-
                   {errors.submit ? <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errors.submit}</p> : null}
 
                   <button
@@ -398,6 +378,34 @@ export default function MolarBearTrial({ content }) {
                 </form>
               )}
             </div>
+
+            {/* Social follow: deliberately quieter than the trial CTA */}
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white/70 px-5 py-4 text-start">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{copy.socialTitle}</p>
+              <p className="mt-1 text-sm text-slate-600">{copy.socialText}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {[
+                  { platform: "facebook", text: copy.socialFacebook, icon: FaFacebookF, color: "#1877f2" },
+                  { platform: "instagram", text: copy.socialInstagram, icon: FaInstagram, color: "#e1306c" },
+                ].map(({ platform, text, icon, color }) => {
+                  const Icon = icon;
+                  return (
+                    <a
+                      key={platform}
+                      href={social[platform]}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => markFollow(platform)}
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[13px] font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
+                    >
+                      <Icon className="text-sm" style={{ color }} />
+                      {text}
+                      {follows[platform] ? <FaCheck className="text-[10px] text-emerald-500" /> : null}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -406,7 +414,7 @@ export default function MolarBearTrial({ content }) {
       <section className="bg-slate-50 px-5 py-14 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-2xl font-bold text-slate-950 sm:text-4xl">{copy.featuresTitle}</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {copy.features.map((feature) => {
               const Icon = FEATURE_ICONS[feature.icon];
               return (
@@ -482,7 +490,7 @@ export default function MolarBearTrial({ content }) {
         <h2 className="mt-5 text-3xl font-bold uppercase text-slate-950 sm:text-4xl">{copy.finalTitle}</h2>
         <p className="mt-2 text-lg text-slate-600">{copy.finalText}</p>
         <TrialButton location="final" className="mt-7 w-full sm:w-auto">
-          {copy.submit} <span aria-hidden="true">🐻</span>
+          {copy.cta}
         </TrialButton>
         <p className="mt-4 text-sm text-slate-400">{copy.byline}</p>
         <Link
