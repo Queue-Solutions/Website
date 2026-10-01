@@ -52,7 +52,7 @@ for (const locale of LOCALES) {
     html = setAttr(html, 'meta property="og:image"', "content", image);
     html = setAttr(html, 'meta name="twitter:image"', "content", image);
     if (pageId === "case-study") html = html.replace('<meta property="og:type" content="website" />', '<meta property="og:type" content="article" />');
-    html = html.replace(/<noscript>[\s\S]*?<\/noscript>\s*/, "");
+    html = html.replace(/<noscript id="site-fallback">[\s\S]*?<\/noscript>\s*/, "");
     html = html.replace('<div id="root"></div>', () => `<div id="root">${renderStaticPage(locale, pageId, slug)}</div>`);
     html = html.replace(
       /<script type="application\/ld\+json" id="structured-data">[\s\S]*?<\/script>/,

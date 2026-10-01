@@ -72,10 +72,30 @@
       .prerender a { color: #7e22ce; }
       .prerender ul, .prerender ol { padding-inline-start: 1.25rem; }
     </style>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    if (window.location.pathname.indexOf('/admin') !== 0) {
+    fbq('init', '1569612081849719');
+    fbq('track', 'PageView');
+    }
+    </script>
+    <!-- End Meta Pixel Code -->
   </head>
   <body>
+    <!-- Meta Pixel (no-JS fallback) -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1569612081849719&ev=PageView&noscript=1"
+    /></noscript>
     <div id="root"></div>
-    <noscript>
+    <noscript id="site-fallback">
       <h1>Queue Solutions: Web Development, Custom Systems &amp; AI Automation</h1>
       <p>Websites, custom business systems, restaurant POS, dental clinic software, and AI automation for companies in Egypt and the Gulf. WhatsApp: +20 11 27435060 · Email: queuesolutions25@gmail.com</p>
     </noscript>
