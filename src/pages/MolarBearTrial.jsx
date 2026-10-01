@@ -19,6 +19,7 @@ import { Link, useLocation } from "react-router-dom";
 import FaqList from "../components/ui/FaqList";
 import { TRIAL_COPY, TRIAL_DOWNLOAD } from "../content/trial";
 import { trackLeadClick } from "../lib/analytics";
+import { trackMetaEvent } from "../lib/metaPixel";
 import { captureUtm, describeUtm, trackCampaignEvent } from "../lib/campaign";
 import {
   buildLeadRecord,
@@ -114,7 +115,8 @@ export default function MolarBearTrial({ content }) {
   };
 
   const handleDownloadClick = (source) => {
-    trackCampaignEvent("trial_activation", { method: source, file_name: TRIAL_DOWNLOAD.fileName });
+    trackCampaignEvent("setup_download", { method: source, file_name: TRIAL_DOWNLOAD.fileName });
+    trackMetaEvent("Download", { content_name: TRIAL_DOWNLOAD.fileName, method: source }, { custom: true });
   };
 
   const handleSubmit = async (event) => {
@@ -172,6 +174,7 @@ export default function MolarBearTrial({ content }) {
     }
 
     trackLeadClick("molarbear_trial", "form");
+    trackMetaEvent("Lead", { content_name: "MolarBear 14-day trial", content_category: "molarbear_trial" });
     trackCampaignEvent("trial_form_complete", { followed: followed.join(",") || "none" });
     try {
       window.localStorage.setItem(REGISTERED_KEY, "1");

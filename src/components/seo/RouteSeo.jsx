@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { absoluteUrl, buildPath, buildStructuredData, getSeo } from "../../content/seo";
+import { trackMetaPageView } from "../../lib/metaPixel";
 import { getAbsoluteUrl } from "../../lib/routes";
 
 const GA_MEASUREMENT_ID = "G-19YFREF1C7";
@@ -34,6 +35,7 @@ function upsertLink(selector, attributes) {
 export default function RouteSeo({ content, pageId, slug = null }) {
   const location = useLocation();
   const trackedInitialView = useRef(false);
+  const metaPath = useRef(location.pathname);
   const locale = content.locale;
   const seo = useMemo(() => getSeo(locale, pageId, slug), [locale, pageId, slug]);
   const canonicalUrl = absoluteUrl(buildPath(pageId, locale, slug));
@@ -117,6 +119,13 @@ export default function RouteSeo({ content, pageId, slug = null }) {
       page_title: seo.title,
     });
   }, [location.hash, location.pathname, location.search, pageLocation, seo.title]);
+
+  // The pixel's own base code sends the first PageView; this covers navigation inside the app.
+  useEffect(() => {
+    if (metaPath.current === location.pathname) return;
+    metaPath.current = location.pathname;
+    trackMetaPageView();
+  }, [location.pathname]);
 
   return null;
 }
