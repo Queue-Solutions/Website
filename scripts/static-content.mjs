@@ -181,8 +181,7 @@ function pageBody(locale, pageId, slug) {
       const copy = TRIAL_COPY[locale];
       return [
         `<p>${esc(copy.idcTitle)} · ${esc(copy.idcDates)}</p>`,
-        `<p>${esc(copy.heroBadge)}</p>`,
-        `<h1>${esc(`${copy.heroKicker}: ${copy.heroOffer}`)}</h1>`,
+        `<h1>${esc(`${copy.headlineTop} ${copy.headlineBottom}`)}</h1>`,
         `<p>${esc(copy.subheadline)} ${esc(copy.description)}</p>`,
         `<p>${esc(copy.noCard)}</p>`,
         `<section><h2>${esc(copy.featuresTitle)}</h2>${copy.features.map((item) => `<h3>${esc(item.title)}</h3><p>${esc(item.text)}</p>`).join("")}</section>`,
