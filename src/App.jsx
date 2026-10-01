@@ -24,12 +24,27 @@ const PAGES = {
   trial: lazy(() => import("./pages/MolarBearTrial")),
 };
 
+const AdminApp = lazy(() => import("./admin/AdminApp"));
+
 export default function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <Root />
     </BrowserRouter>
   );
+}
+
+// The private admin dashboard lives outside the public site shell (no header, footer, SEO tags).
+function Root() {
+  const location = useLocation();
+  if (location.pathname.replace(/\/+$/, "") === "/admin") {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
+        <AdminApp />
+      </Suspense>
+    );
+  }
+  return <AppShell />;
 }
 
 function AppShell() {
