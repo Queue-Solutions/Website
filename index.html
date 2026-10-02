@@ -62,8 +62,14 @@
       gtag('config', 'G-19YFREF1C7');
     </script>
     <script type="application/ld+json" id="structured-data">{}</script>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
     <style>
       /* Prerendered content for crawlers and no-JS visitors; React replaces it once the app loads. */
+      /* With JS on it stays hidden so it doesn't flash before the app; it shows only if the app fails to load. */
+      .js .prerender { visibility: hidden; animation: prerender-reveal 0s linear 6s forwards; }
+      @keyframes prerender-reveal { to { visibility: visible; } }
       .prerender { max-width: 60rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; font: 16px/1.7 Inter, Cairo, system-ui, sans-serif; color: #0f172a; }
       .prerender header ul, .prerender nav ol { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0; list-style: none; }
       .prerender h1 { font-size: 2rem; line-height: 1.2; margin: 2rem 0 1rem; }

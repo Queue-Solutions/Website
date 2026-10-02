@@ -7,7 +7,7 @@ import { TRIAL_DOWNLOAD } from "../content/trial";
 
 export const EMAILJS = {
   serviceId: "",
-  templateId: "",
+  templateId: "template_486ycis",
   publicKey: "",
 };
 
