@@ -12,7 +12,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { supabase } from "../lib/supabase";
-import { countBy, LEAD_TYPES, lastNDays, normalizeLead, toCsv, dayKey, whatsappLink } from "./leadData";
+import { countBy, LEAD_TYPES, lastNDays, normalizeLead, toCsv, dayKey, trialLinkMessage, whatsappLink } from "./leadData";
 
 // Private dashboard at /admin. Access is enforced by Supabase: the `leads` table only returns
 // rows to the admin account (row-level security). This page just signs in and displays them.
@@ -466,9 +466,20 @@ function LeadRow({ lead, onToggle, open }) {
                 <Detail label="Campaign" value={[lead.source, lead.medium, lead.campaign].filter(Boolean).join(" / ")} />
                 <Detail label="Followed" value={lead.followed.join(", ")} />
                 <Detail label="Version downloaded" value={lead.version} />
+                <Detail label="Signed up on" value={lead.device} />
                 <Detail label="Page" value={lead.pageUrl} />
               </dl>
               <div>
+                {lead.type === "molarbear_trial" && lead.phone ? (
+                  <a
+                    href={whatsappLink(lead.phone, trialLinkMessage(lead))}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mb-4 inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-3.5 py-2 text-sm font-semibold text-white hover:brightness-105"
+                  >
+                    <FaWhatsapp /> Send download link on WhatsApp
+                  </a>
+                ) : null}
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Full message</p>
                 <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-700">{lead.message || "—"}</p>
               </div>

@@ -4,12 +4,14 @@ import {
   FaChartBar,
   FaCheck,
   FaCheckCircle,
+  FaCopy,
   FaDesktop,
   FaDownload,
   FaEnvelope,
   FaFacebookF,
   FaGift,
   FaInstagram,
+  FaLaptop,
   FaPhoneAlt,
   FaUsers,
   FaWhatsapp,
@@ -31,10 +33,20 @@ import {
   sendLeadNotification,
 } from "../lib/leadCapture";
 import { getPathForPageId } from "../lib/routes";
+import {
+  fillLink,
+  isEmailSendingConfigured,
+  isLikelyPhone,
+  mailtoLink,
+  sendTrialLinkEmail,
+  TRIAL_LINK_URL,
+  whatsappToNumber,
+} from "../lib/trialLink";
 
 const ACCENT = "#2f7d8c";
 const BEAR = "/portfolio/molarbear.webp";
 const REGISTERED_KEY = "molarbear-trial-registered";
+const CONTACT_KEY = "molarbear-trial-contact";
 const FEATURE_ICONS = { calendar: FaCalendarAlt, users: FaUsers, desktop: FaDesktop, chart: FaChartBar };
 
 const inputClassName =
@@ -47,6 +59,14 @@ function startDownload() {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+}
+
+function readContact() {
+  try {
+    return JSON.parse(window.localStorage.getItem(CONTACT_KEY) || "null");
+  } catch {
+    return null;
+  }
 }
 
 function readRegistered() {
@@ -84,6 +104,10 @@ export default function MolarBearTrial({ content }) {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(() => (typeof window !== "undefined" && readRegistered() ? "done" : "idle"));
   const formStarted = useRef(false);
+  const [onPhone] = useState(() => isLikelyPhone());
+  const [contact, setContact] = useState(() => (typeof window !== "undefined" ? readContact() : null));
+  const [emailState, setEmailState] = useState("idle");
+  const [linkCopied, setLinkCopied] = useState(false);
   const country = PHONE_COUNTRIES.find((item) => item.code === form.phoneCountry) ?? PHONE_COUNTRIES[0];
   const whatsappHelp = `${content.siteDetails.whatsappHref}?text=${encodeURIComponent(copy.whatsappText)}`;
 
@@ -149,6 +173,7 @@ export default function MolarBearTrial({ content }) {
       `City: ${city || "-"}`,
       `Followed: ${followed.length ? followed.join(", ") : "none"}`,
       `Source: ${describeUtm()}`,
+      `Device: ${onPhone ? "phone" : "computer"}`,
       `Version: ${TRIAL_DOWNLOAD.version}`,
     ].join("\n");
     const leadRecord = buildLeadRecord({
@@ -176,15 +201,46 @@ export default function MolarBearTrial({ content }) {
     trackLeadClick("molarbear_trial", "form");
     trackMetaEvent("Lead", { content_name: "MolarBear 14-day trial", content_category: "molarbear_trial" });
     trackCampaignEvent("trial_form_complete", { followed: followed.join(",") || "none" });
+    const savedContact = { name, email, phone: leadRecord.phone };
     try {
       window.localStorage.setItem(REGISTERED_KEY, "1");
+      window.localStorage.setItem(CONTACT_KEY, JSON.stringify(savedContact));
     } catch {
       // Private mode: the visitor just sees the form again next time.
     }
+    setContact(savedContact);
     setStatus("done");
-    handleDownloadClick("auto");
-    startDownload();
+    if (onPhone) {
+      trackCampaignEvent("pc_download_prompt", { device: "phone" });
+    } else {
+      handleDownloadClick("auto");
+      startDownload();
+    }
+    if (isEmailSendingConfigured()) {
+      setEmailState("sending");
+      sendTrialLinkEmail({ toEmail: email, toName: name, locale })
+        .then(() => {
+          setEmailState("sent");
+          trackCampaignEvent("download_link_sent", { channel: "email", device: onPhone ? "phone" : "computer" });
+        })
+        .catch((sendError) => {
+          console.warn("Download link email failed.", sendError);
+          setEmailState("failed");
+        });
+    }
     document.getElementById("trial-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const withEmail = (text) => text.replace("{email}", contact?.email || "");
+
+  const copyTrialLink = async () => {
+    try {
+      await navigator.clipboard.writeText(TRIAL_LINK_URL);
+    } catch {
+      window.prompt(copy.copyLink, TRIAL_LINK_URL);
+    }
+    setLinkCopied(true);
+    trackCampaignEvent("download_link_sent", { channel: "copy", device: onPhone ? "phone" : "computer" });
   };
 
   const fieldError = (field) => (errors[field] ? <p className="mt-1.5 text-sm text-red-600">{errors[field]}</p> : null);
@@ -252,13 +308,99 @@ export default function MolarBearTrial({ content }) {
             <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.14)]">
               <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${ACCENT}, #6cc3cf)` }} />
 
-              {status === "done" ? (
+              {status === "done" && onPhone ? (
+                <div className="space-y-5 p-6 text-start sm:p-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl" aria-hidden="true">🎉</span>
+                    <h2 className="text-2xl font-bold leading-tight text-slate-950">{copy.successTitle}</h2>
+                  </div>
+                  <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <FaLaptop className="mt-0.5 shrink-0 text-lg text-amber-600" />
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{copy.pcOnlyTitle}</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-700">{copy.pcOnlyText}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm font-bold text-slate-900">{copy.getLinkTitle}</p>
+                    {emailState === "sending" ? (
+                      <p className="flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        <FaEnvelope className="shrink-0 text-slate-400" /> {withEmail(copy.emailSending)}
+                      </p>
+                    ) : emailState === "sent" ? (
+                      <p className="flex items-start gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                        <FaCheckCircle className="mt-0.5 shrink-0" /> {withEmail(copy.emailSent)}
+                      </p>
+                    ) : (
+                      <a
+                        href={mailtoLink(contact?.email || "", copy.mailSubject, fillLink(copy.mailBody))}
+                        onClick={() => trackCampaignEvent("download_link_sent", { channel: "email_manual", device: "phone" })}
+                        className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:border-slate-400"
+                      >
+                        <FaEnvelope className="shrink-0" /> <span className="truncate">{withEmail(copy.emailButton)}</span>
+                      </a>
+                    )}
+                    {contact?.phone ? (
+                      <a
+                        href={whatsappToNumber(contact.phone, fillLink(copy.shareText))}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => trackCampaignEvent("download_link_sent", { channel: "whatsapp", device: "phone" })}
+                        className="flex h-14 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] text-base font-bold text-white shadow-[0_14px_30px_rgba(37,211,102,0.3)] transition hover:brightness-105"
+                      >
+                        <FaWhatsapp className="text-xl" /> {copy.whatsappSelf}
+                      </a>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={copyTrialLink}
+                      className="flex w-full items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-start"
+                    >
+                      <span className="truncate text-xs text-slate-500" dir="ltr">{TRIAL_LINK_URL}</span>
+                      <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-slate-800">
+                        {linkCopied ? <FaCheckCircle className="text-emerald-500" /> : <FaCopy />} {linkCopied ? copy.linkCopied : copy.copyLink}
+                      </span>
+                    </button>
+                  </div>
+
+                  <ul className="grid gap-2 sm:grid-cols-3">
+                    {copy.successFacts.map((fact) => (
+                      <li key={fact} className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                        <FaCheckCircle className="shrink-0 text-emerald-500" /> {fact}
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={TRIAL_DOWNLOAD.url}
+                    download={TRIAL_DOWNLOAD.fileName}
+                    onClick={() => handleDownloadClick("button_phone")}
+                    className="block text-center text-xs font-medium text-slate-400 underline underline-offset-4 hover:text-slate-600"
+                  >
+                    {copy.downloadAnyway}
+                  </a>
+                  <a
+                    href={whatsappHelp}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => trackCampaignEvent("trial_help_whatsapp")}
+                    className="flex items-center justify-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800"
+                  >
+                    <FaWhatsapp className="text-base" /> {copy.needHelp}
+                  </a>
+                </div>
+              ) : status === "done" ? (
                 <div className="space-y-5 p-6 text-start sm:p-8">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl" aria-hidden="true">🎉</span>
                     <h2 className="text-2xl font-bold leading-tight text-slate-950">{copy.successTitle}</h2>
                   </div>
                   <p className="text-[15px] leading-7 text-slate-600">{copy.successText}</p>
+                  {emailState === "sent" ? (
+                    <p className="flex items-start gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                      <FaEnvelope className="mt-0.5 shrink-0" /> {withEmail(copy.pcEmailSent)}
+                    </p>
+                  ) : null}
                   <a
                     href={TRIAL_DOWNLOAD.url}
                     download={TRIAL_DOWNLOAD.fileName}
@@ -398,6 +540,7 @@ export default function MolarBearTrial({ content }) {
                     <span>·</span>
                     <span>{copy.noCard}</span>
                   </p>
+                  <p className="text-center text-xs leading-5 text-slate-400">{copy.pcNote}</p>
                 </form>
               )}
             </div>

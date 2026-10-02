@@ -10,7 +10,7 @@ export const LEAD_TYPES = {
   project: { label: "Project inquiry", short: "Project", tone: "bg-violet-50 text-violet-700 ring-violet-200" },
 };
 
-const FIELD_LABELS = ["Clinic", "City", "Followed", "Source", "Version"];
+const FIELD_LABELS = ["Clinic", "City", "Followed", "Source", "Device", "Version"];
 
 function extractFields(message = "") {
   const pattern = new RegExp(`(${FIELD_LABELS.join("|")}):\\s*`, "g");
@@ -75,6 +75,8 @@ export function normalizeLead(row) {
     medium: utm.utm_medium || "",
     campaign: utm.utm_campaign || "",
     version: fields.version || "",
+    device: fields.device || "",
+    arabic: (row.page_url || "").includes("/ar/"),
     message: row.message || "",
     pageUrl: row.page_url || "",
     status: row.status || "new",
@@ -82,9 +84,20 @@ export function normalizeLead(row) {
   };
 }
 
-export function whatsappLink(phone) {
+export function whatsappLink(phone, text = "") {
   const digits = (phone || "").replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}` : "";
+  if (!digits) return "";
+  return text ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : `https://wa.me/${digits}`;
+}
+
+const TRIAL_LINK = "https://queuesolutions.org/downloads/MolarBear-Setup.exe";
+
+// Pre-written WhatsApp message with the installer link, in the language the lead signed up in.
+export function trialLinkMessage(lead) {
+  const name = lead.name || "";
+  return lead.arabic
+    ? `أهلًا ${name}، شكرًا لتسجيلك في تجربة MolarBear المجانية لمدة 14 يومًا.\nهذا رابط التحميل، افتحه على كمبيوتر العيادة (ويندوز 10 أو 11):\n${TRIAL_LINK}\n\nلو احتجت مساعدة في التثبيت، رد على هذه الرسالة.`
+    : `Hi ${name}, thanks for signing up for the MolarBear 14-day free trial.\nHere is your download link. Please open it on your clinic's Windows PC (Windows 10 or 11):\n${TRIAL_LINK}\n\nIf you need help installing, just reply to this message.`;
 }
 
 export function countBy(items, key) {
