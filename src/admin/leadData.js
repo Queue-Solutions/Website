@@ -109,11 +109,11 @@ export function whatsappLink(phone, text = "") {
   return text ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : `https://wa.me/${digits}`;
 }
 
-const TRIAL_LINK = "https://queuesolutions.org/downloads/MolarBear-Setup.exe";
 
 // Pre-written WhatsApp message with the installer link, in the language the lead signed up in.
 export function trialLinkMessage(lead) {
   const name = lead.name || "";
+  const TRIAL_LINK = `https://queuesolutions.org${lead.arabic ? "/ar" : ""}/molarbear-trial?get=1`;
   return lead.arabic
     ? `أهلًا ${name}، شكرًا لتسجيلك في تجربة MolarBear المجانية لمدة 14 يومًا.\nهذا رابط التحميل، افتحه على كمبيوتر العيادة (ويندوز 10 أو 11):\n${TRIAL_LINK}\n\nلو احتجت مساعدة في التثبيت، رد على هذه الرسالة.`
     : `Hi ${name}, thanks for signing up for the MolarBear 14-day free trial.\nHere is your download link. Please open it on your clinic's Windows PC (Windows 10 or 11):\n${TRIAL_LINK}\n\nIf you need help installing, just reply to this message.`;

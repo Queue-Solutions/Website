@@ -8,6 +8,7 @@ import {
   FaDesktop,
   FaDownload,
   FaEnvelope,
+  FaExclamationTriangle,
   FaFacebookF,
   FaGift,
   FaInstagram,
@@ -42,7 +43,7 @@ import {
   isLikelyPhone,
   mailtoLink,
   sendTrialLinkEmail,
-  TRIAL_LINK_URL,
+  trialLinkUrl,
   whatsappToNumber,
 } from "../lib/trialLink";
 
@@ -203,7 +204,10 @@ export default function MolarBearTrial({ content }) {
   const [form, setForm] = useState({ name: "", email: "", phoneCountry: "EG", phone: "", clinic: "", city: "" });
   const [follows, setFollows] = useState({ facebook: false, instagram: false });
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState(() => (typeof window !== "undefined" && readRegistered() ? "done" : "idle"));
+  // ?get=1 is the link we email or WhatsApp after signup: it skips the form and starts the download.
+  const [fromLink] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("get") === "1");
+  const [status, setStatus] = useState(() => (typeof window !== "undefined" && (readRegistered() || fromLink) ? "done" : "idle"));
+  const linkDownloadStarted = useRef(false);
   const formStarted = useRef(false);
   const [onPhone] = useState(() => isLikelyPhone());
   const [contact, setContact] = useState(() => (typeof window !== "undefined" ? readContact() : null));
@@ -212,6 +216,14 @@ export default function MolarBearTrial({ content }) {
   const [videoOpen, setVideoOpen] = useState(false);
   const country = PHONE_COUNTRIES.find((item) => item.code === form.phoneCountry) ?? PHONE_COUNTRIES[0];
   const whatsappHelp = `${content.siteDetails.whatsappHref}?text=${encodeURIComponent(copy.whatsappText)}`;
+
+  useEffect(() => {
+    if (!fromLink || onPhone || linkDownloadStarted.current) return;
+    linkDownloadStarted.current = true;
+    trackCampaignEvent("setup_download", { method: "link", file_name: TRIAL_DOWNLOAD.fileName });
+    trackMetaEvent("Download", { content_name: TRIAL_DOWNLOAD.fileName, method: "link" }, { custom: true });
+    startDownload();
+  }, [fromLink, onPhone]);
 
   useEffect(() => {
     captureUtm();
@@ -351,9 +363,9 @@ export default function MolarBearTrial({ content }) {
 
   const copyTrialLink = async () => {
     try {
-      await navigator.clipboard.writeText(TRIAL_LINK_URL);
+      await navigator.clipboard.writeText(trialLinkUrl(locale));
     } catch {
-      window.prompt(copy.copyLink, TRIAL_LINK_URL);
+      window.prompt(copy.copyLink, trialLinkUrl(locale));
     }
     setLinkCopied(true);
     trackCampaignEvent("download_link_sent", { channel: "copy", device: onPhone ? "phone" : "computer" });
@@ -461,7 +473,7 @@ export default function MolarBearTrial({ content }) {
                       </p>
                     ) : (
                       <a
-                        href={mailtoLink(contact?.email || "", copy.mailSubject, fillLink(copy.mailBody))}
+                        href={mailtoLink(contact?.email || "", copy.mailSubject, fillLink(copy.mailBody, locale))}
                         onClick={() => trackCampaignEvent("download_link_sent", { channel: "email_manual", device: "phone" })}
                         className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:border-slate-400"
                       >
@@ -470,7 +482,7 @@ export default function MolarBearTrial({ content }) {
                     )}
                     {contact?.phone ? (
                       <a
-                        href={whatsappToNumber(contact.phone, fillLink(copy.shareText))}
+                        href={whatsappToNumber(contact.phone, fillLink(copy.shareText, locale))}
                         target="_blank"
                         rel="noreferrer"
                         onClick={() => trackCampaignEvent("download_link_sent", { channel: "whatsapp", device: "phone" })}
@@ -484,7 +496,7 @@ export default function MolarBearTrial({ content }) {
                       onClick={copyTrialLink}
                       className="flex w-full items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-start"
                     >
-                      <span className="min-w-0 truncate text-xs text-slate-500" dir="ltr">{TRIAL_LINK_URL}</span>
+                      <span className="min-w-0 truncate text-xs text-slate-500" dir="ltr">{trialLinkUrl(locale)}</span>
                       <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-slate-800">
                         {linkCopied ? <FaCheckCircle className="text-emerald-500" /> : <FaCopy />} {linkCopied ? copy.linkCopied : copy.copyLink}
                       </span>
@@ -537,6 +549,32 @@ export default function MolarBearTrial({ content }) {
                   >
                     <FaDownload /> {copy.downloadButton}
                   </a>
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <p className="flex items-start gap-2 text-sm font-bold text-slate-900">
+                      <FaExclamationTriangle className="mt-0.5 shrink-0 text-amber-500" /> {copy.blockedTitle}
+                    </p>
+                    <p className="mt-1.5 text-sm leading-6 text-slate-700">{copy.blockedText}</p>
+                    <ol className="mt-2 space-y-1.5">
+                      {copy.blockedSteps.map((step, index) => (
+                        <li key={step} className="flex items-start gap-2.5 text-sm leading-6 text-slate-800">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-400 text-[11px] font-bold text-white">
+                            {index + 1}
+                          </span>
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                    <p className="mt-2.5 text-xs leading-5 text-slate-500">{copy.blockedEdge}</p>
+                    <a
+                      href={whatsappHelp}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => trackCampaignEvent("trial_help_whatsapp", { reason: "blocked_download" })}
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+                    >
+                      <FaWhatsapp /> {copy.blockedHelp}
+                    </a>
+                  </div>
                   <ul className="grid gap-2 sm:grid-cols-3">
                     {copy.successFacts.map((fact) => (
                       <li key={fact} className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">

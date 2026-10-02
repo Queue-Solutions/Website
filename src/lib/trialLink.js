@@ -11,7 +11,11 @@ export const EMAILJS = {
   publicKey: "gA-FgNrQFHlmzpjm4",
 };
 
-export const TRIAL_LINK_URL = `https://queuesolutions.org${TRIAL_DOWNLOAD.url}`;
+// The link we send opens the trial page, which starts the download and shows what to do if the
+// browser warns about it. A bare .exe link would leave the dentist alone with that warning.
+export function trialLinkUrl(locale = "en") {
+  return `https://queuesolutions.org${locale === "ar" ? "/ar" : ""}/molarbear-trial?get=1`;
+}
 
 export function isEmailSendingConfigured() {
   return Boolean(EMAILJS.serviceId && EMAILJS.templateId && EMAILJS.publicKey);
@@ -31,7 +35,7 @@ export async function sendTrialLinkEmail({ toEmail, toName, locale }) {
       template_params: {
         to_email: toEmail,
         to_name: toName,
-        download_link: TRIAL_LINK_URL,
+        download_link: trialLinkUrl(locale),
         trial_days: TRIAL_DOWNLOAD.days,
         language: locale,
       },
@@ -63,6 +67,6 @@ export function mailtoLink(toEmail, subject, body) {
   return `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-export function fillLink(text) {
-  return text.replace("{link}", TRIAL_LINK_URL);
+export function fillLink(text, locale) {
+  return text.replace("{link}", trialLinkUrl(locale));
 }

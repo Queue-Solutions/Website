@@ -104,13 +104,13 @@ export const PRODUCT_COPY = {
           features: ["Everything in Essential", "Inventory and materials", "Multiple doctors", "Doctor commissions", "Advanced reports", "Multiple users"],
         },
         clinic: {
-          name: "Clinic",
+          name: "Expert",
           audience: "For multi-doctor clinics that need unlimited users and computers, advanced permissions, and customisation.",
           features: ["Everything in Professional", "Unlimited users", "Unlimited computers", "Advanced permissions", "Cloud backup", "Customisation"],
         },
       },
       faq: [
-        { q: "How is MolarBear priced?", a: "Three plans, billed yearly: Essential at EGP 1,250 a month (EGP 15,000 a year), Professional at EGP 1,850 a month (EGP 22,200 a year), and Clinic at EGP 3,200 a month (EGP 38,400 a year)." },
+        { q: "How is MolarBear priced?", a: "Three plans, billed yearly: Essential at EGP 1,250 a month (EGP 15,000 a year), Professional at EGP 1,850 a month (EGP 22,200 a year), and Expert at EGP 3,200 a month (EGP 38,400 a year)." },
         { q: "Does it work with my X-ray sensor?", a: "MolarBear imports X-rays directly from NanoPix sensor software. Ask us about other sensors." },
         { q: "Can the reception and the doctor use different computers?", a: "Yes. The Clinic Flow board is shared, so both computers see the same patients in real time." },
         { q: "Is it in Arabic?", a: "Yes. MolarBear works in Arabic and English, and prices are in Egyptian pounds." },
@@ -196,13 +196,13 @@ export const PRODUCT_COPY = {
           features: ["كل مزايا الباقة الأساسية", "المخزون والخامات", "تعدد الأطباء", "نسب الأطباء", "تقارير متقدمة", "تعدد المستخدمين"],
         },
         clinic: {
-          name: "العيادة",
+          name: "الخبير",
           audience: "للعيادات متعددة الأطباء التي تحتاج مستخدمين وأجهزة بلا حدود وصلاحيات متقدمة وتخصيصًا.",
           features: ["كل مزايا الباقة الاحترافية", "عدد غير محدود من المستخدمين", "عدد غير محدود من الأجهزة", "صلاحيات متقدمة", "نسخ احتياطي سحابي", "تخصيص حسب العيادة"],
         },
       },
       faq: [
-        { q: "كم سعر MolarBear؟", a: "ثلاث باقات والدفع سنويًا: الأساسية بـ 1,250 جنيه شهريًا (15,000 جنيه سنويًا)، والاحترافية بـ 1,850 جنيه شهريًا (22,200 جنيه سنويًا)، والعيادة بـ 3,200 جنيه شهريًا (38,400 جنيه سنويًا)." },
+        { q: "كم سعر MolarBear؟", a: "ثلاث باقات والدفع سنويًا: الأساسية بـ 1,250 جنيه شهريًا (15,000 جنيه سنويًا)، والاحترافية بـ 1,850 جنيه شهريًا (22,200 جنيه سنويًا)، والخبير بـ 3,200 جنيه شهريًا (38,400 جنيه سنويًا)." },
         { q: "هل يعمل مع جهاز الأشعة لدي؟", a: "يستورد MolarBear الأشعة مباشرة من برنامج NanoPix. تواصل معنا بخصوص الأجهزة الأخرى." },
         { q: "هل يمكن أن يعمل الاستقبال والطبيب على جهازين مختلفين؟", a: "نعم. لوحة سير العيادة مشتركة، فيرى الجهازان المرضى أنفسهم لحظيًا." },
         { q: "هل البرنامج بالعربية؟", a: "نعم. يعمل MolarBear بالعربية والإنجليزية، والأسعار بالجنيه المصري." },
