@@ -268,15 +268,15 @@ export default function MolarBearTrial({ content }) {
 
       {/* Hero + form */}
       <section className="px-5 pb-14 pt-2 sm:px-6 sm:pb-20 sm:pt-6">
-        <div className="mx-auto grid max-w-6xl items-start gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          <div className="text-center lg:pt-6 lg:text-start">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-12">
+          <div className="min-w-0 text-center lg:pt-6 lg:text-start">
             <div className="relative mx-auto inline-block lg:mx-0">
               <div className="absolute inset-0 -z-10 scale-125 rounded-full bg-[#2f7d8c]/15 blur-2xl" aria-hidden="true" />
               <img src={BEAR} alt="MolarBear" className="h-28 w-28 rounded-[2rem] border-4 border-white bg-white object-cover shadow-[0_20px_50px_rgba(47,125,140,0.25)] sm:h-36 sm:w-36" />
             </div>
 
             <h1 className="mt-5 font-bold leading-[1.02]">
-              <span className="block bg-gradient-to-r from-[#1f5f6b] via-[#2f7d8c] to-[#4fb3c1] bg-clip-text pb-1 text-[3.1rem] uppercase text-transparent sm:text-7xl">
+              <span className="block bg-gradient-to-r from-[#1f5f6b] via-[#2f7d8c] to-[#4fb3c1] bg-clip-text pb-1 text-[clamp(2.25rem,11vw,4.5rem)] uppercase text-transparent">
                 {copy.headlineTop}
               </span>
               <span className="mt-1 block text-[1.6rem] text-slate-950 sm:text-4xl">{copy.headlineBottom}</span>
@@ -304,7 +304,7 @@ export default function MolarBearTrial({ content }) {
           </div>
 
           {/* Form card */}
-          <div id="trial-form" className="scroll-mt-6 lg:sticky lg:top-6">
+          <div id="trial-form" className="min-w-0 scroll-mt-6 lg:sticky lg:top-6">
             <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.14)]">
               <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${ACCENT}, #6cc3cf)` }} />
 
@@ -338,7 +338,7 @@ export default function MolarBearTrial({ content }) {
                         onClick={() => trackCampaignEvent("download_link_sent", { channel: "email_manual", device: "phone" })}
                         className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:border-slate-400"
                       >
-                        <FaEnvelope className="shrink-0" /> <span className="truncate">{withEmail(copy.emailButton)}</span>
+                        <FaEnvelope className="shrink-0" /> <span className="min-w-0 truncate">{withEmail(copy.emailButton)}</span>
                       </a>
                     )}
                     {contact?.phone ? (
@@ -357,7 +357,7 @@ export default function MolarBearTrial({ content }) {
                       onClick={copyTrialLink}
                       className="flex w-full items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-start"
                     >
-                      <span className="truncate text-xs text-slate-500" dir="ltr">{TRIAL_LINK_URL}</span>
+                      <span className="min-w-0 truncate text-xs text-slate-500" dir="ltr">{TRIAL_LINK_URL}</span>
                       <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-slate-800">
                         {linkCopied ? <FaCheckCircle className="text-emerald-500" /> : <FaCopy />} {linkCopied ? copy.linkCopied : copy.copyLink}
                       </span>

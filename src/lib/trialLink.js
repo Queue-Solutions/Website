@@ -6,9 +6,9 @@
 import { TRIAL_DOWNLOAD } from "../content/trial";
 
 export const EMAILJS = {
-  serviceId: "",
+  serviceId: "service_p3gwazp",
   templateId: "template_486ycis",
-  publicKey: "",
+  publicKey: "gA-FgNrQFHlmzpjm4",
 };
 
 export const TRIAL_LINK_URL = `https://queuesolutions.org${TRIAL_DOWNLOAD.url}`;
