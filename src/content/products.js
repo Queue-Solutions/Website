@@ -15,8 +15,8 @@ export const PRICING = {
   "queue-pos": [{ id: "lifetime", price: 20000, period: "lifetime", featured: true }],
   molarbear: [
     { id: "essential", price: 15000, period: "year" },
-    { id: "professional", price: 22000, period: "year", featured: true },
-    { id: "clinic", price: 38000, period: "year" },
+    { id: "professional", price: 22200, period: "year", featured: true },
+    { id: "clinic", price: 38400, period: "year" },
   ],
 };
 
@@ -110,7 +110,7 @@ export const PRODUCT_COPY = {
         },
       },
       faq: [
-        { q: "How is MolarBear priced?", a: "Three plans, billed yearly: Essential at EGP 1,250 a month (EGP 15,000 a year), Professional at EGP 1,833 a month (EGP 22,000 a year), and Clinic at EGP 3,167 a month (EGP 38,000 a year)." },
+        { q: "How is MolarBear priced?", a: "Three plans, billed yearly: Essential at EGP 1,250 a month (EGP 15,000 a year), Professional at EGP 1,850 a month (EGP 22,200 a year), and Clinic at EGP 3,200 a month (EGP 38,400 a year)." },
         { q: "Does it work with my X-ray sensor?", a: "MolarBear imports X-rays directly from NanoPix sensor software. Ask us about other sensors." },
         { q: "Can the reception and the doctor use different computers?", a: "Yes. The Clinic Flow board is shared, so both computers see the same patients in real time." },
         { q: "Is it in Arabic?", a: "Yes. MolarBear works in Arabic and English, and prices are in Egyptian pounds." },
@@ -202,7 +202,7 @@ export const PRODUCT_COPY = {
         },
       },
       faq: [
-        { q: "كم سعر MolarBear؟", a: "ثلاث باقات والدفع سنويًا: الأساسية بـ 1,250 جنيه شهريًا (15,000 جنيه سنويًا)، والاحترافية بـ 1,833 جنيه شهريًا (22,000 جنيه سنويًا)، والعيادة بـ 3,167 جنيه شهريًا (38,000 جنيه سنويًا)." },
+        { q: "كم سعر MolarBear؟", a: "ثلاث باقات والدفع سنويًا: الأساسية بـ 1,250 جنيه شهريًا (15,000 جنيه سنويًا)، والاحترافية بـ 1,850 جنيه شهريًا (22,200 جنيه سنويًا)، والعيادة بـ 3,200 جنيه شهريًا (38,400 جنيه سنويًا)." },
         { q: "هل يعمل مع جهاز الأشعة لدي؟", a: "يستورد MolarBear الأشعة مباشرة من برنامج NanoPix. تواصل معنا بخصوص الأجهزة الأخرى." },
         { q: "هل يمكن أن يعمل الاستقبال والطبيب على جهازين مختلفين؟", a: "نعم. لوحة سير العيادة مشتركة، فيرى الجهازان المرضى أنفسهم لحظيًا." },
         { q: "هل البرنامج بالعربية؟", a: "نعم. يعمل MolarBear بالعربية والإنجليزية، والأسعار بالجنيه المصري." },
