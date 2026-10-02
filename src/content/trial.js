@@ -7,8 +7,8 @@
 
 // Hosted on this site so the link stays stable. Replace the file (same name) when a new version ships.
 export const TRIAL_DOWNLOAD = {
-  url: "/downloads/MolarBear-Setup.exe",
-  fileName: "MolarBear-Setup.exe",
+  url: "/downloads/MolarBear-Setup.zip",
+  fileName: "MolarBear-Setup.zip",
   version: "1.30.0",
   sizeMb: 42,
   days: 14,
@@ -68,7 +68,7 @@ export const TRIAL_COPY = {
     successFacts: ["Trial duration: 14 days", "No payment required to start", "Windows 10 or 11"],
     stepsTitle: "Install in 3 steps",
     steps: [
-      "Open MolarBear-Setup.exe and follow the installer.",
+      "Open MolarBear-Setup.zip and double-click the MolarBear-Setup file inside to install.",
       "If Windows shows a blue SmartScreen message, click \"More info\" then \"Run anyway\".",
       "Open MolarBear. Your 14 days start the first time you open it.",
     ],
@@ -77,7 +77,7 @@ export const TRIAL_COPY = {
     blockedText: "Chrome asks you to confirm new programs before keeping them. MolarBear is new, so it takes one extra click:",
     blockedSteps: [
       "Click the downloads icon (↓) at the top of Chrome.",
-      "Click MolarBear-Setup.exe.",
+      "Click MolarBear-Setup.zip.",
       "Choose \"Download suspicious file\". Chrome uses this label for every new program it doesn't know yet.",
     ],
     blockedEdge: "Using Microsoft Edge? Click \"…\" next to the file, then Keep, Show more, Keep anyway.",
@@ -185,7 +185,7 @@ export const TRIAL_COPY = {
     successFacts: ["مدة التجربة: 14 يومًا", "لا يلزم أي دفع للبدء", "ويندوز 10 أو 11"],
     stepsTitle: "التثبيت في 3 خطوات",
     steps: [
-      "افتح ملف MolarBear-Setup.exe واتبع خطوات التثبيت.",
+      "افتح ملف MolarBear-Setup.zip، ثم اضغط مرتين على ملف MolarBear-Setup بداخله لبدء التثبيت.",
       "إذا ظهرت رسالة ويندوز الزرقاء (SmartScreen)، اضغط «More info» ثم «Run anyway».",
       "افتح MolarBear. تبدأ الأيام الـ 14 من أول مرة تفتح فيها البرنامج.",
     ],
@@ -194,7 +194,7 @@ export const TRIAL_COPY = {
     blockedText: "يطلب كروم تأكيدًا قبل الاحتفاظ بالبرامج الجديدة، وMolarBear جديد، فالأمر يحتاج ضغطة إضافية واحدة:",
     blockedSteps: [
       "اضغط أيقونة التنزيلات (↓) أعلى متصفح كروم.",
-      "اضغط على MolarBear-Setup.exe.",
+      "اضغط على MolarBear-Setup.zip.",
       "اختر «تنزيل الملف المريب» (Download suspicious file)، وهو الاسم الذي يستخدمه كروم لكل برنامج جديد لا يعرفه بعد.",
     ],
     blockedEdge: "تستخدم Microsoft Edge؟ اضغط «…» بجوار الملف، ثم «الاحتفاظ»، ثم «إظهار المزيد»، ثم «الاحتفاظ على أي حال».",
