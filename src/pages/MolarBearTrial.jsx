@@ -4,11 +4,11 @@ import {
   FaChartBar,
   FaCheck,
   FaCheckCircle,
+  FaChevronDown,
   FaCopy,
   FaDesktop,
   FaDownload,
   FaEnvelope,
-  FaExclamationTriangle,
   FaFacebookF,
   FaGift,
   FaInstagram,
@@ -549,15 +549,22 @@ export default function MolarBearTrial({ content }) {
                   >
                     <FaDownload /> {copy.downloadButton}
                   </a>
-                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                    <p className="flex items-start gap-2 text-sm font-bold text-slate-900">
-                      <FaExclamationTriangle className="mt-0.5 shrink-0 text-amber-500" /> {copy.blockedTitle}
-                    </p>
-                    <p className="mt-1.5 text-sm leading-6 text-slate-700">{copy.blockedText}</p>
+                  {/* Collapsed by default: only the visitor whose browser held the file back needs it. */}
+                  <details
+                    className="group rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3"
+                    onToggle={(event) => {
+                      if (event.currentTarget.open) trackCampaignEvent("download_help_open");
+                    }}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-700 [&::-webkit-details-marker]:hidden">
+                      {copy.blockedTitle}
+                      <FaChevronDown className="shrink-0 text-xs text-slate-400 transition group-open:rotate-180" />
+                    </summary>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{copy.blockedText}</p>
                     <ol className="mt-2 space-y-1.5">
                       {copy.blockedSteps.map((step, index) => (
                         <li key={step} className="flex items-start gap-2.5 text-sm leading-6 text-slate-800">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-400 text-[11px] font-bold text-white">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white" style={{ backgroundColor: ACCENT }}>
                             {index + 1}
                           </span>
                           {step}
@@ -574,7 +581,7 @@ export default function MolarBearTrial({ content }) {
                     >
                       <FaWhatsapp /> {copy.blockedHelp}
                     </a>
-                  </div>
+                  </details>
                   <ul className="grid gap-2 sm:grid-cols-3">
                     {copy.successFacts.map((fact) => (
                       <li key={fact} className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
