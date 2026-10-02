@@ -28,7 +28,6 @@ export const COMPANY = {
     "AI automation",
     "AI call agents",
     "WhatsApp Business AI chatbots",
-    "IT services",
   ],
 };
 
@@ -68,12 +67,6 @@ export const SERVICES = {
       description:
         "Internal tools, desktop software, and dashboards that give your team one clear place to track work, data, and decisions.",
     },
-    {
-      id: "it-services",
-      icon: "code",
-      title: "IT Services",
-      description: "We support the technical setup behind your work so your tools stay stable, connected, and easy to manage.",
-    },
   ],
   ar: [
     {
@@ -105,12 +98,6 @@ export const SERVICES = {
       icon: "cogs",
       title: "الأنظمة المخصصة",
       description: "أدوات داخلية وبرامج سطح مكتب ولوحات تحكم تمنح فريقك مكانًا واحدًا واضحًا لمتابعة العمل والبيانات والقرارات.",
-    },
-    {
-      id: "it-services",
-      icon: "code",
-      title: "خدمات تقنية المعلومات",
-      description: "ندعم البنية التقنية لأعمالك لتبقى أدواتك مستقرة ومترابطة وسهلة الإدارة.",
     },
   ],
 };
@@ -167,7 +154,7 @@ export const COMPANY_FAQ = {
   en: [
     {
       q: "What does Queue Solutions do?",
-      a: "Queue Solutions is a software and AI studio based in Egypt. We build websites, mobile apps, custom business systems, AI automation, and AI call agents, and we provide IT services for businesses in Egypt and the Gulf.",
+      a: "Queue Solutions is a software and AI studio based in Egypt. We build websites, mobile apps, custom business systems, AI automation, and AI call agents for businesses in Egypt and the Gulf.",
     },
     {
       q: "Which countries does Queue Solutions work with?",
@@ -197,7 +184,7 @@ export const COMPANY_FAQ = {
   ar: [
     {
       q: "ماذا تقدم Queue Solutions؟",
-      a: "Queue Solutions شركة برمجيات وذكاء اصطناعي مقرها مصر. نصمم المواقع الإلكترونية وتطبيقات الجوال والأنظمة المخصصة، ونبني حلول الأتمتة ووكلاء المكالمات بالذكاء الاصطناعي، ونقدم خدمات تقنية المعلومات للشركات في مصر والخليج.",
+      a: "Queue Solutions شركة برمجيات وذكاء اصطناعي مقرها مصر. نصمم المواقع الإلكترونية وتطبيقات الجوال والأنظمة المخصصة، ونبني حلول الأتمتة ووكلاء المكالمات بالذكاء الاصطناعي للشركات في مصر والخليج.",
     },
     {
       q: "في أي دول تعمل Queue Solutions؟",

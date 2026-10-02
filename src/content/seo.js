@@ -18,7 +18,7 @@ export const SEO = {
     services: {
       title: "Services | Website Development, AI Agents & Custom Software | Queue Solutions",
       description:
-        "Website development, mobile apps, custom systems, AI automation, AI call agents, and IT services. One partner for your customer-facing and operational technology.",
+        "Website development, mobile apps, custom systems, AI automation, and AI call agents. One partner for your customer-facing and operational technology.",
     },
     portfolio: {
       title: "Portfolio | Websites, AI Agents & Desktop Systems | Queue Solutions",
@@ -45,7 +45,7 @@ export const SEO = {
     services: {
       title: "خدماتنا | تصميم مواقع وتطبيقات ووكلاء ذكاء اصطناعي | Queue Solutions",
       description:
-        "تطوير المواقع وتطبيقات الجوال والأنظمة المخصصة والأتمتة بالذكاء الاصطناعي ووكلاء المكالمات الذكية وخدمات تقنية المعلومات، مع شريك تقني واحد.",
+        "تطوير المواقع وتطبيقات الجوال والأنظمة المخصصة والأتمتة بالذكاء الاصطناعي ووكلاء المكالمات الذكية، مع شريك تقني واحد.",
     },
     portfolio: {
       title: "أعمالنا | مواقع ووكلاء ذكاء اصطناعي وبرامج سطح مكتب | Queue Solutions",

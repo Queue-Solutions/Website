@@ -43,21 +43,22 @@ function MouseAura() {
     return null;
   }
 
+  // Clipped to the viewport so the glow never makes the page scroll sideways near the edges.
   return (
-    <>
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       <Motion.div
-        className="pointer-events-none fixed z-0 h-[30rem] w-[30rem] rounded-full bg-purple-400/30 blur-[120px]"
+        className="pointer-events-none absolute h-[30rem] w-[30rem] rounded-full bg-purple-400/30 blur-[120px]"
         style={{ left: auraX, top: auraY, x: "-50%", y: "-50%" }}
       />
       <Motion.div
-        className="pointer-events-none fixed z-0 h-52 w-52 rounded-full border border-white/55 bg-white/24 blur-3xl"
+        className="pointer-events-none absolute h-52 w-52 rounded-full border border-white/55 bg-white/24 blur-3xl"
         style={{ left: trailX, top: trailY, x: "-50%", y: "-50%" }}
       />
       <Motion.div
-        className="pointer-events-none fixed z-0 h-24 w-24 rounded-full bg-fuchsia-200/50 blur-2xl"
+        className="pointer-events-none absolute h-24 w-24 rounded-full bg-fuchsia-200/50 blur-2xl"
         style={{ left: trailX, top: trailY, x: "-50%", y: "-50%" }}
       />
-    </>
+    </div>
   );
 }
 

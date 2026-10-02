@@ -242,7 +242,7 @@ export default function Services({ content, navTo, setShowForm }) {
             />
           </Reveal>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
+          <div className="grid gap-5 md:grid-cols-4 xl:grid-cols-6 xl:gap-8 md:[&>*]:col-span-2 md:[&>*:last-child:nth-child(odd)]:col-start-2 xl:[&>*:last-child:nth-child(odd)]:col-start-auto xl:[&>*:nth-child(4):nth-last-child(2)]:col-start-2">
             {servicesContent.services.map((service, index) => {
               const Icon = iconMap[service.icon];
 
