@@ -67,15 +67,17 @@
 
 @layer utilities {
   .animate-ticker {
-    animation: ticker 45s linear infinite;
+    animation: ticker 40s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
   @keyframes ticker {
     from {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translateX(-50%);
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
@@ -136,9 +138,5 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .animate-ticker {
-    animation: none;
   }
 }

@@ -51,7 +51,7 @@ export default function TrialTicker({ locale }) {
           WebkitMaskImage: "linear-gradient(90deg, transparent, black 4%, black 96%, transparent)",
         }}
       >
-        <div className="flex h-full w-max items-center animate-ticker group-hover:[animation-play-state:paused]" dir="ltr">
+        <div className="flex h-full w-max items-center animate-ticker" dir="ltr">
           {half(false)}
           {half(true)}
         </div>
