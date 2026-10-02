@@ -12,7 +12,19 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import { supabase } from "../lib/supabase";
-import { countBy, LEAD_TYPES, lastNDays, normalizeLead, toCsv, dayKey, trialLinkMessage, whatsappLink } from "./leadData";
+import {
+  countBy,
+  dayKey,
+  LEAD_STATUSES,
+  LEAD_TYPES,
+  lastNDays,
+  normalizeLead,
+  pipelineCounts,
+  STATUS_BY_ID,
+  toCsv,
+  trialLinkMessage,
+  whatsappLink,
+} from "./leadData";
 
 // Private dashboard at /admin. Access is enforced by Supabase: the `leads` table only returns
 // rows to the admin account (row-level security). This page just signs in and displays them.
@@ -148,6 +160,8 @@ function Dashboard({ session }) {
   const [error, setError] = useState("");
   const [tab, setTab] = useState("molarbear_trial");
   const [range, setRange] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [saveError, setSaveError] = useState("");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState(null);
 
@@ -163,6 +177,21 @@ function Dashboard({ session }) {
     }
     setLoading(false);
   }, []);
+
+  // Optimistic: the badge changes at once and goes back if Supabase refuses the update.
+  const updateStatus = async (id, status) => {
+    const previous = leads.find((lead) => lead.id === id)?.status;
+    setSaveError("");
+    setLeads((current) => current.map((lead) => (lead.id === id ? { ...lead, status } : lead)));
+    const { data, error: updateError } = await supabase.from("leads").update({ status }).eq("id", id).select("id");
+    if (updateError || !data?.length) {
+      setLeads((current) => current.map((lead) => (lead.id === id ? { ...lead, status: previous } : lead)));
+      setSaveError(
+        updateError?.message ||
+          "Supabase did not allow the change. Run step 4 (\"Admin can update leads\") from docs/admin-setup.sql in the Supabase SQL Editor.",
+      );
+    }
+  };
 
   useEffect(() => {
     // Fetching on mount is the purpose of this effect.
@@ -180,6 +209,7 @@ function Dashboard({ session }) {
   const filtered = leads.filter((lead) => {
     if (tab !== "all" && lead.type !== tab) return false;
     if (allowedDays && !allowedDays.has(lead.day)) return false;
+    if (statusFilter !== "all" && lead.status !== statusFilter) return false;
     if (!needle) return true;
     return [lead.name, lead.clinic, lead.city, lead.phone, lead.email, lead.source, lead.message].some((value) =>
       value.toLowerCase().includes(needle),
@@ -194,6 +224,10 @@ function Dashboard({ session }) {
     { label: "Digital audits", value: leads.filter((lead) => lead.type === "digital_audit").length, hint: "Free audit requests" },
     { label: "Project inquiries", value: leads.filter((lead) => lead.type === "project").length, hint: "Contact form" },
   ];
+
+  const pipeline = pipelineCounts(trials);
+  const lostCount = trials.filter((lead) => lead.status === "lost").length;
+  const paidRate = trials.length ? Math.round((pipeline[3].count / trials.length) * 1000) / 10 : 0;
 
   const chartDays = lastNDays(30);
   const perDay = chartDays.map((day) => ({ day, count: trials.filter((lead) => lead.day === day).length }));
@@ -252,6 +286,14 @@ function Dashboard({ session }) {
             Could not load leads: {error}
           </div>
         ) : null}
+        {saveError ? (
+          <div className="flex items-start justify-between gap-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+            <span>Status not saved: {saveError}</span>
+            <button type="button" onClick={() => setSaveError("")} className="font-semibold hover:underline">
+              Dismiss
+            </button>
+          </div>
+        ) : null}
         {!loading && !error && leads.length === 0 ? (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
             No leads are visible to this account yet. If you expected some, check that the admin read policy in Supabase uses{" "}
@@ -271,6 +313,48 @@ function Dashboard({ session }) {
               <p className={`mt-1 text-xs ${stat.accent ? "text-teal-100" : "text-slate-400"}`}>{stat.hint}</p>
             </div>
           ))}
+        </section>
+
+        {/* Trial pipeline */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-bold text-slate-950">MolarBear trial pipeline</h2>
+            <p className="text-sm text-slate-500">
+              Trial → paid: <span className="font-bold text-emerald-600">{loading ? "–" : `${paidRate}%`}</span>
+              <span className="mx-2 text-slate-300">·</span>
+              Not interested: <span className="font-semibold text-slate-700">{loading ? "–" : lostCount}</span>
+            </p>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {pipeline.map((stage, index) => {
+              const share = trials.length ? Math.round((stage.count / trials.length) * 100) : 0;
+              const fromPrevious = index && pipeline[index - 1].count ? Math.round((stage.count / pipeline[index - 1].count) * 100) : null;
+              return (
+                <button
+                  key={stage.id}
+                  type="button"
+                  onClick={() => {
+                    setTab("molarbear_trial");
+                    setStatusFilter(index === 0 ? "all" : stage.id);
+                  }}
+                  className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-left transition hover:border-slate-300"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{index === 0 ? "Signed up" : stage.label}</p>
+                  <p className="mt-1 text-3xl font-bold tabular-nums text-slate-950">{loading ? "–" : stage.count}</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white">
+                    <div className={`h-full rounded-full ${stage.bar}`} style={{ width: `${share}%` }} />
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">
+                    {share}% of signups
+                    {fromPrevious !== null ? <span className="text-slate-400"> · {fromPrevious}% of previous step</span> : null}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs text-slate-400">
+            Change a lead&apos;s status from the table below. Paid clinics also count as contacted and installed.
+          </p>
         </section>
 
         {/* Charts */}
@@ -345,6 +429,18 @@ function Dashboard({ session }) {
                 />
               </div>
               <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-medium text-slate-700"
+              >
+                <option value="all">All statuses</option>
+                {LEAD_STATUSES.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+              <select
                 value={range}
                 onChange={(event) => setRange(event.target.value)}
                 className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm font-medium text-slate-700"
@@ -367,10 +463,11 @@ function Dashboard({ session }) {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[56rem] text-left text-sm">
+            <table className="w-full min-w-[64rem] text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Date</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 font-semibold">Name</th>
                   <th className="px-4 py-3 font-semibold">Clinic / Company</th>
                   <th className="px-4 py-3 font-semibold">City</th>
@@ -384,15 +481,21 @@ function Dashboard({ session }) {
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-10 text-center text-slate-400">Loading leads...</td>
+                    <td colSpan={10} className="px-4 py-10 text-center text-slate-400">Loading leads...</td>
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-10 text-center text-slate-400">No leads match these filters.</td>
+                    <td colSpan={10} className="px-4 py-10 text-center text-slate-400">No leads match these filters.</td>
                   </tr>
                 ) : (
                   filtered.map((lead) => (
-                    <LeadRow key={lead.id} lead={lead} open={openId === lead.id} onToggle={() => setOpenId(openId === lead.id ? null : lead.id)} />
+                    <LeadRow
+                      key={lead.id}
+                      lead={lead}
+                      open={openId === lead.id}
+                      onStatusChange={(status) => updateStatus(lead.id, status)}
+                      onToggle={() => setOpenId(openId === lead.id ? null : lead.id)}
+                    />
                   ))
                 )}
               </tbody>
@@ -407,7 +510,7 @@ function Dashboard({ session }) {
   );
 }
 
-function LeadRow({ lead, onToggle, open }) {
+function LeadRow({ lead, onStatusChange, onToggle, open }) {
   const type = LEAD_TYPES[lead.type];
   const SourceIcon = SOURCE_ICONS[lead.source];
 
@@ -415,6 +518,9 @@ function LeadRow({ lead, onToggle, open }) {
     <>
       <tr onClick={onToggle} className={`cursor-pointer transition hover:bg-slate-50 ${open ? "bg-slate-50" : ""}`}>
         <td className="whitespace-nowrap px-4 py-3 text-slate-500">{lead.dateLabel}</td>
+        <td className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
+          <StatusSelect value={lead.status} onChange={onStatusChange} />
+        </td>
         <td className="whitespace-nowrap px-4 py-3 font-semibold text-slate-900">{lead.name || "—"}</td>
         <td className="px-4 py-3 text-slate-700">{lead.clinic || "—"}</td>
         <td className="px-4 py-3 text-slate-700">{lead.city || "—"}</td>
@@ -459,7 +565,7 @@ function LeadRow({ lead, onToggle, open }) {
       </tr>
       {open ? (
         <tr className="bg-slate-50">
-          <td colSpan={9} className="px-4 pb-5 pt-1">
+          <td colSpan={10} className="px-4 pb-5 pt-1">
             <div className="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr_2fr]">
               <dl className="space-y-2 text-sm">
                 <Detail label="Type" value={type.label} />
@@ -488,6 +594,24 @@ function LeadRow({ lead, onToggle, open }) {
         </tr>
       ) : null}
     </>
+  );
+}
+
+function StatusSelect({ onChange, value }) {
+  const status = STATUS_BY_ID[value];
+  return (
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      aria-label="Lead status"
+      className={`cursor-pointer rounded-md border-0 py-1 pl-2 pr-7 text-xs font-semibold ring-1 ring-inset focus:outline-none focus:ring-2 ${status.tone}`}
+    >
+      {LEAD_STATUSES.map((item) => (
+        <option key={item.id} value={item.id}>
+          {item.label}
+        </option>
+      ))}
+    </select>
   );
 }
 

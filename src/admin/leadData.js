@@ -10,6 +10,25 @@ export const LEAD_TYPES = {
   project: { label: "Project inquiry", short: "Project", tone: "bg-violet-50 text-violet-700 ring-violet-200" },
 };
 
+// Sales pipeline for a lead, in order. "lost" sits outside the funnel.
+export const LEAD_STATUSES = [
+  { id: "new", label: "New", tone: "bg-sky-50 text-sky-700 ring-sky-200", bar: "bg-sky-500" },
+  { id: "contacted", label: "Contacted", tone: "bg-amber-50 text-amber-800 ring-amber-200", bar: "bg-amber-500" },
+  { id: "installed", label: "Installed", tone: "bg-violet-50 text-violet-700 ring-violet-200", bar: "bg-violet-500" },
+  { id: "paid", label: "Paid", tone: "bg-emerald-50 text-emerald-700 ring-emerald-200", bar: "bg-emerald-500" },
+  { id: "lost", label: "Not interested", tone: "bg-slate-100 text-slate-500 ring-slate-200", bar: "bg-slate-400" },
+];
+
+export const STATUS_BY_ID = Object.fromEntries(LEAD_STATUSES.map((status) => [status.id, status]));
+
+// How many leads reached each pipeline stage. A paid clinic also counts as contacted and installed;
+// a lead marked "not interested" was at least contacted.
+export function pipelineCounts(leads) {
+  const order = ["new", "contacted", "installed", "paid"];
+  const rank = (status) => (status === "lost" ? 1 : Math.max(0, order.indexOf(status)));
+  return order.map((id, index) => ({ ...STATUS_BY_ID[id], count: leads.filter((lead) => rank(lead.status) >= index).length }));
+}
+
 const FIELD_LABELS = ["Clinic", "City", "Followed", "Source", "Device", "Version"];
 
 function extractFields(message = "") {
@@ -79,7 +98,7 @@ export function normalizeLead(row) {
     arabic: (row.page_url || "").includes("/ar/"),
     message: row.message || "",
     pageUrl: row.page_url || "",
-    status: row.status || "new",
+    status: STATUS_BY_ID[row.status] ? row.status : "new",
     whatsapp: row.whatsapp_preference === "whatsapp",
   };
 }
@@ -118,12 +137,13 @@ export function lastNDays(count) {
 }
 
 export function toCsv(leads) {
-  const header = ["Date", "Type", "Name", "Clinic / Company", "City", "Phone", "Email", "Source", "Medium", "Campaign", "Followed", "Message"];
+  const header = ["Date", "Type", "Status", "Name", "Clinic / Company", "City", "Phone", "Email", "Source", "Medium", "Campaign", "Followed", "Message"];
   const escape = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
   const rows = leads.map((lead) =>
     [
       lead.dateLabel,
       LEAD_TYPES[lead.type].label,
+      STATUS_BY_ID[lead.status].label,
       lead.name,
       lead.clinic,
       lead.city,

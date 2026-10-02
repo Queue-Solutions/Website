@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   FaCalendarAlt,
   FaChartBar,
@@ -13,6 +13,9 @@ import {
   FaInstagram,
   FaLaptop,
   FaPhoneAlt,
+  FaPlay,
+  FaRedo,
+  FaTimes,
   FaUsers,
   FaWhatsapp,
   FaWindows,
@@ -45,6 +48,8 @@ import {
 
 const ACCENT = "#2f7d8c";
 const BEAR = "/portfolio/molarbear.webp";
+const DEMO_VIDEO = "/videos/molarbear-demo.mp4";
+const DEMO_POSTER = "/case-studies/molarbear-poster.webp";
 const REGISTERED_KEY = "molarbear-trial-registered";
 const CONTACT_KEY = "molarbear-trial-contact";
 const FEATURE_ICONS = { calendar: FaCalendarAlt, users: FaUsers, desktop: FaDesktop, chart: FaChartBar };
@@ -93,6 +98,102 @@ function TrialButton({ children, className = "", location, onClick }) {
   );
 }
 
+// Full-screen player: opens from a tap (so it can start with sound), closes on Esc or the backdrop,
+// and ends on a "start my trial" prompt.
+function DemoVideoModal({ copy, onClose, onStartTrial }) {
+  const videoRef = useRef(null);
+  const [ended, setEnded] = useState(false);
+  const watched = useRef(0);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    videoRef.current?.play().catch(() => {});
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
+
+  const onTimeUpdate = (event) => {
+    const { currentTime, duration } = event.currentTarget;
+    const percent = duration ? Math.floor((currentTime / duration) * 4) * 25 : 0;
+    if (percent > watched.current && percent < 100) {
+      watched.current = percent;
+      trackCampaignEvent("demo_video_progress", { percent });
+    }
+  };
+
+  const replay = () => {
+    setEnded(false);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-3 backdrop-blur-sm sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      aria-label={copy.videoTitle}
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={copy.closeVideo}
+          className="absolute -top-12 end-0 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+        >
+          <FaTimes />
+        </button>
+        <div className="relative overflow-hidden rounded-2xl bg-black shadow-2xl sm:rounded-[1.75rem]">
+          <video
+            ref={videoRef}
+            className="block aspect-video w-full"
+            src={DEMO_VIDEO}
+            poster={DEMO_POSTER}
+            controls
+            playsInline
+            preload="auto"
+            onTimeUpdate={onTimeUpdate}
+            onEnded={() => {
+              setEnded(true);
+              trackCampaignEvent("demo_video_complete");
+            }}
+          />
+          {ended ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-950/85 p-6 text-center text-white">
+              <img src={BEAR} alt="" className="h-14 w-14 rounded-2xl border-2 border-white/80 object-cover sm:h-16 sm:w-16" />
+              <p className="text-xl font-bold sm:text-3xl">{copy.videoEndTitle}</p>
+              <p className="text-sm text-white/80 sm:text-base">{copy.videoEndText}</p>
+              <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={onStartTrial}
+                  className="inline-flex h-12 items-center justify-center rounded-full px-7 text-sm font-bold uppercase tracking-wide text-white shadow-lg transition hover:brightness-110 sm:h-14 sm:text-base"
+                  style={{ backgroundColor: ACCENT }}
+                >
+                  {copy.cta}
+                </button>
+                <button type="button" onClick={replay} className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white">
+                  <FaRedo className="text-xs" /> {copy.replay}
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MolarBearTrial({ content }) {
   const location = useLocation();
   const { locale, ui } = content;
@@ -108,6 +209,7 @@ export default function MolarBearTrial({ content }) {
   const [contact, setContact] = useState(() => (typeof window !== "undefined" ? readContact() : null));
   const [emailState, setEmailState] = useState("idle");
   const [linkCopied, setLinkCopied] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const country = PHONE_COUNTRIES.find((item) => item.code === form.phoneCountry) ?? PHONE_COUNTRIES[0];
   const whatsappHelp = `${content.siteDetails.whatsappHref}?text=${encodeURIComponent(copy.whatsappText)}`;
 
@@ -231,6 +333,20 @@ export default function MolarBearTrial({ content }) {
     document.getElementById("trial-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const openDemo = (from) => {
+    setVideoOpen(true);
+    trackCampaignEvent("demo_video_play", { video_location: from });
+    trackMetaEvent("ViewContent", { content_name: "MolarBear demo video", content_category: "molarbear_trial" });
+  };
+
+  const closeDemo = useCallback(() => setVideoOpen(false), []);
+
+  const startTrialFromVideo = () => {
+    setVideoOpen(false);
+    trackCampaignEvent("trial_cta_click", { cta_location: "video_end" });
+    window.setTimeout(() => document.getElementById("trial-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  };
+
   const withEmail = (text) => text.replace("{email}", contact?.email || "");
 
   const copyTrialLink = async () => {
@@ -289,6 +405,17 @@ export default function MolarBearTrial({ content }) {
                 {copy.cta}
               </TrialButton>
               <p className="text-sm font-medium text-slate-500">{copy.noCard}</p>
+              <button
+                type="button"
+                onClick={() => openDemo("hero")}
+                className="group mt-2 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white py-1.5 pe-5 ps-1.5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-[#2f7d8c]/40 hover:shadow-md"
+              >
+                <span className="relative flex h-9 w-9 items-center justify-center rounded-full text-white" style={{ backgroundColor: ACCENT }}>
+                  <span className="absolute inset-0 animate-ping rounded-full bg-[#2f7d8c]/40" aria-hidden="true" />
+                  <FaPlay className="relative ms-0.5 text-xs" />
+                </span>
+                {copy.watchDemo}
+              </button>
             </div>
 
             <div className="mx-auto mt-6 flex max-w-md items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-start lg:mx-0">
@@ -548,6 +675,36 @@ export default function MolarBearTrial({ content }) {
         </div>
       </section>
 
+      {/* Demo video */}
+      <section className="px-5 pb-14 sm:px-6 sm:pb-20">
+        <div className="mx-auto max-w-5xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: ACCENT }}>{copy.videoKicker}</p>
+          <h2 className="mt-2 text-2xl font-bold text-slate-950 sm:text-4xl">{copy.videoTitle}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-slate-600 sm:text-base">{copy.videoText}</p>
+          <button
+            type="button"
+            onClick={() => openDemo("section")}
+            aria-label={copy.watchDemo}
+            className="group relative mt-8 block w-full overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-900 shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:rounded-[2rem]"
+          >
+            <img src={DEMO_POSTER} alt="" className="block aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.02]" loading="lazy" />
+            <span className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/10 to-transparent" aria-hidden="true" />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white text-xl shadow-2xl transition group-hover:scale-110 sm:h-24 sm:w-24 sm:text-3xl" style={{ color: ACCENT }}>
+                <span className="absolute inset-0 animate-ping rounded-full bg-white/50" aria-hidden="true" />
+                <FaPlay className="relative ms-1" />
+              </span>
+            </span>
+            <span className="absolute bottom-3 start-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-semibold text-white sm:bottom-5 sm:start-5 sm:text-sm">
+              {copy.videoCaption}
+            </span>
+          </button>
+          <TrialButton location="video" className="mt-8 w-full sm:w-auto">
+            {copy.cta}
+          </TrialButton>
+        </div>
+      </section>
+
       {/* What it does */}
       <section className="bg-slate-50 px-5 py-14 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
@@ -677,6 +834,8 @@ export default function MolarBearTrial({ content }) {
           </div>
         </div>
       </footer>
+
+      {videoOpen ? <DemoVideoModal copy={copy} onClose={closeDemo} onStartTrial={startTrialFromVideo} /> : null}
     </div>
   );
 }

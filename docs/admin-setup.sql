@@ -26,3 +26,11 @@ drop policy if exists "Admin can read leads" on public.leads;
 create policy "Admin can read leads" on public.leads
   for select to authenticated
   using ((auth.jwt() ->> 'email') = 'queuesolutions25@gmail.com');
+
+-- 4) Let ONLY the admin account change a lead's status (New, Contacted, Installed, Paid,
+--    Not interested) from the dashboard.
+drop policy if exists "Admin can update leads" on public.leads;
+create policy "Admin can update leads" on public.leads
+  for update to authenticated
+  using ((auth.jwt() ->> 'email') = 'queuesolutions25@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'queuesolutions25@gmail.com');
