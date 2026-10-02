@@ -1,7 +1,7 @@
 // Static, semantic HTML for each prerendered page. It sits inside <div id="root"> so crawlers and
 // AI assistants that do not run JavaScript still read the real content and links; React replaces it on load.
 import { COMPANY, COMPANY_FAQ, FAQ_TITLE, PROCESS_STEPS, SERVICES } from "../src/content/company.js";
-import { LANDING_PAGES, PRICING, PRODUCT_COPY } from "../src/content/products.js";
+import { LANDING_PAGES, monthlyPrice, PRICING, PRODUCT_COPY } from "../src/content/products.js";
 import { getProjects } from "../src/content/projects.js";
 import { absoluteUrl, buildPath, getBreadcrumbs, getSeo, LANDING_SLUGS, PAGE_IDS, SEO, SITE_NAME } from "../src/content/seo.js";
 import { TRIAL_COPY } from "../src/content/trial.js";
@@ -32,6 +32,7 @@ const LABELS = {
     features: "Features",
     currency: "EGP",
     perYear: "per year",
+    perMonth: "a month, billed yearly",
     oneTime: "one-time",
     from: "from",
   },
@@ -60,6 +61,7 @@ const LABELS = {
     features: "المميزات",
     currency: "جنيه",
     perYear: "سنويًا",
+    perMonth: "شهريًا، والدفع سنويًا",
     oneTime: "مرة واحدة",
     from: "تبدأ من",
   },
@@ -75,10 +77,12 @@ const price = (value, locale) => value.toLocaleString(locale === "ar" ? "ar-EG" 
 function priceLine(productId, locale) {
   const t = LABELS[locale];
   const plans = PRICING[productId];
+  if (plans[0].period === "year") {
+    const lowest = Math.min(...plans.map(monthlyPrice));
+    return `${t.from} ${price(lowest, locale)} ${t.currency} ${t.perMonth}`;
+  }
   const lowest = Math.min(...plans.map((plan) => plan.price));
-  return plans[0].period === "year"
-    ? `${t.from} ${price(lowest, locale)} ${t.currency} ${t.perYear}`
-    : `${price(lowest, locale)} ${t.currency} ${t.oneTime}`;
+  return `${price(lowest, locale)} ${t.currency} ${t.oneTime}`;
 }
 
 function faqSection(title, items) {
@@ -151,8 +155,11 @@ function pageBody(locale, pageId, slug) {
     const plans = PRICING[productId]
       .map((plan) => {
         const planCopy = copy.plans[plan.id];
-        const period = plan.period === "year" ? t.perYear : t.oneTime;
-        return `<h3>${esc(planCopy.name)}: ${esc(price(plan.price, locale))} ${esc(t.currency)} ${esc(period)}</h3><p>${esc(planCopy.audience)}</p>${list(planCopy.features)}`;
+        const amount =
+          plan.period === "year"
+            ? `${price(monthlyPrice(plan), locale)} ${t.currency} ${t.perMonth} (${price(plan.price, locale)} ${t.currency} ${t.perYear})`
+            : `${price(plan.price, locale)} ${t.currency} ${t.oneTime}`;
+        return `<h3>${esc(planCopy.name)}: ${esc(amount)}</h3><p>${esc(planCopy.audience)}</p>${list(planCopy.features)}`;
       })
       .join("");
     return [
@@ -265,7 +272,11 @@ export function renderLlmsTxt({ full = false } = {}) {
       lines.push(
         ...PRICING[productId].map((plan) => {
           const planCopy = copy.plans[plan.id];
-          return `- ${planCopy.name}: EGP ${price(plan.price, en)} ${plan.period === "year" ? "per year" : "one-time"}. ${planCopy.audience} Includes: ${planCopy.features.join("; ")}.`;
+          const amount =
+            plan.period === "year"
+              ? `EGP ${price(monthlyPrice(plan), en)} a month, billed yearly (EGP ${price(plan.price, en)} per year)`
+              : `EGP ${price(plan.price, en)} one-time`;
+          return `- ${planCopy.name}: ${amount}. ${planCopy.audience} Includes: ${planCopy.features.join("; ")}.`;
         }),
         "",
       );

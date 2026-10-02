@@ -112,7 +112,7 @@ export const TRIAL_COPY = {
       { q: "Do I need a credit card?", a: "No. You only fill in the short form above. No payment details are requested." },
       {
         q: "What happens after 14 days?",
-        a: "MolarBear stops saving new records until you activate a licence. Your data stays on your computer. Choose a plan, starting from EGP 15,000 per year, and you continue exactly where you left off.",
+        a: "MolarBear stops saving new records until you activate a licence. Your data stays on your computer. Choose a plan, starting from EGP 1,250 a month (billed yearly), and you continue exactly where you left off.",
       },
       { q: "Can I use MolarBear on my phone?", a: "No. MolarBear is a Windows desktop app for your clinic computers (Windows 10 or 11)." },
       { q: "Is MolarBear only for dentists?", a: "Yes. It is built specifically for dental clinics, from a solo dentist to clinics with several doctors." },
@@ -220,7 +220,7 @@ export const TRIAL_COPY = {
       { q: "هل أحتاج إلى بطاقة ائتمان؟", a: "لا. تملأ النموذج القصير أعلاه فقط، ولا نطلب أي بيانات دفع." },
       {
         q: "ماذا يحدث بعد 14 يومًا؟",
-        a: "يتوقف MolarBear عن حفظ سجلات جديدة حتى تفعّل الترخيص، وتبقى بياناتك محفوظة على جهازك. اختر باقة تبدأ من 15,000 جنيه سنويًا، وتكمل من حيث توقفت.",
+        a: "يتوقف MolarBear عن حفظ سجلات جديدة حتى تفعّل الترخيص، وتبقى بياناتك محفوظة على جهازك. اختر باقة تبدأ من 1,250 جنيه شهريًا (والدفع سنويًا)، وتكمل من حيث توقفت.",
       },
       { q: "هل يمكنني استخدام MolarBear على الموبايل؟", a: "لا. MolarBear برنامج سطح مكتب يعمل على أجهزة العيادة بنظام ويندوز 10 أو 11." },
       { q: "هل MolarBear مخصص لأطباء الأسنان فقط؟", a: "نعم. صُمم خصيصًا لعيادات الأسنان، من الطبيب المستقل حتى العيادات متعددة الأطباء." },

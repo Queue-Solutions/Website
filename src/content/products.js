@@ -20,6 +20,11 @@ export const PRICING = {
   ],
 };
 
+// Yearly plans are billed once a year; the site leads with the monthly equivalent.
+export function monthlyPrice(plan) {
+  return Math.round(plan.price / 12);
+}
+
 export const PRODUCT_COPY = {
   en: {
     "restaurant-pos-egypt": {
@@ -67,14 +72,14 @@ export const PRODUCT_COPY = {
       ],
     },
     "dental-clinic-software-egypt": {
-      seoTitle: "Dental Clinic Software in Egypt | MolarBear: Plans from EGP 15,000/year",
+      seoTitle: "Dental Clinic Software in Egypt | MolarBear: Plans from EGP 1,250/month",
       seoDescription:
-        "MolarBear is dental clinic management software for Egypt: patients, appointments, dental chart, X-rays, payments, inventory, and doctor commissions. Three plans from EGP 15,000 per year.",
+        "MolarBear is dental clinic management software for Egypt: patients, appointments, dental chart, X-rays, payments, inventory, and doctor commissions. Three plans from EGP 1,250 a month, billed yearly.",
       eyebrow: "Dental clinic software for Egypt",
       title: "The desk and the doctor on one board, and every pound accounted for",
       description:
         "MolarBear manages patients, appointments, treatments, X-rays, payments, and doctor earnings in one Windows app built for how Egyptian clinics really work.",
-      priceNote: "Plans from EGP 15,000 per year",
+      priceNote: "Plans from EGP 1,250 a month, billed yearly",
       videoTitle: "A 90-second tour of MolarBear",
       featuresTitle: "Built around a real clinic day",
       features: [
@@ -86,7 +91,7 @@ export const PRODUCT_COPY = {
         { title: "Doctor earnings", text: "Each dentist's share calculated automatically after lab and assistant costs." },
       ],
       pricingTitle: "Choose the plan that fits your clinic",
-      pricingDescription: "Annual licence per clinic, priced in Egyptian pounds. Book a demo to see it with your own workflow.",
+      pricingDescription: "Prices per clinic in Egyptian pounds, billed once a year. Book a demo to see it with your own workflow.",
       plans: {
         essential: {
           name: "Essential",
@@ -105,7 +110,7 @@ export const PRODUCT_COPY = {
         },
       },
       faq: [
-        { q: "How is MolarBear priced?", a: "Three annual plans: Essential at EGP 15,000, Professional at EGP 22,000, and Clinic at EGP 38,000 per year." },
+        { q: "How is MolarBear priced?", a: "Three plans, billed yearly: Essential at EGP 1,250 a month (EGP 15,000 a year), Professional at EGP 1,833 a month (EGP 22,000 a year), and Clinic at EGP 3,167 a month (EGP 38,000 a year)." },
         { q: "Does it work with my X-ray sensor?", a: "MolarBear imports X-rays directly from NanoPix sensor software. Ask us about other sensors." },
         { q: "Can the reception and the doctor use different computers?", a: "Yes. The Clinic Flow board is shared, so both computers see the same patients in real time." },
         { q: "Is it in Arabic?", a: "Yes. MolarBear works in Arabic and English, and prices are in Egyptian pounds." },
@@ -159,14 +164,14 @@ export const PRODUCT_COPY = {
       ],
     },
     "dental-clinic-software-egypt": {
-      seoTitle: "برنامج إدارة عيادات الأسنان في مصر | MolarBear بباقات تبدأ من 15,000 جنيه سنويًا",
+      seoTitle: "برنامج إدارة عيادات الأسنان في مصر | MolarBear بباقات تبدأ من 1,250 جنيه شهريًا",
       seoDescription:
-        "MolarBear برنامج لإدارة عيادات الأسنان في مصر: ملفات المرضى والمواعيد ومخطط الأسنان والأشعة والمدفوعات والمخزون ونسب الأطباء. ثلاث باقات تبدأ من 15,000 جنيه سنويًا.",
+        "MolarBear برنامج لإدارة عيادات الأسنان في مصر: ملفات المرضى والمواعيد ومخطط الأسنان والأشعة والمدفوعات والمخزون ونسب الأطباء. ثلاث باقات تبدأ من 1,250 جنيه شهريًا، والدفع سنويًا.",
       eyebrow: "برنامج عيادات أسنان في مصر",
       title: "الاستقبال والطبيب على لوحة واحدة، وكل جنيه محسوب",
       description:
         "يدير MolarBear المرضى والمواعيد والعلاجات والأشعة والمدفوعات ومستحقات الأطباء في برنامج ويندوز واحد، مصمم وفق طريقة عمل العيادات المصرية فعلًا.",
-      priceNote: "باقات تبدأ من 15,000 جنيه سنويًا",
+      priceNote: "باقات تبدأ من 1,250 جنيه شهريًا، والدفع سنويًا",
       videoTitle: "جولة في MolarBear خلال 90 ثانية",
       featuresTitle: "مصمم حول يوم العمل الحقيقي في العيادة",
       features: [
@@ -178,7 +183,7 @@ export const PRODUCT_COPY = {
         { title: "مستحقات الأطباء", text: "نصيب كل طبيب محسوب تلقائيًا بعد خصم تكاليف المعمل والمساعد." },
       ],
       pricingTitle: "اختر الباقة المناسبة لعيادتك",
-      pricingDescription: "ترخيص سنوي لكل عيادة بالجنيه المصري. احجز عرضًا تجريبيًا لتراه وفق طريقة عمل عيادتك.",
+      pricingDescription: "الأسعار لكل عيادة بالجنيه المصري، والدفع مرة واحدة سنويًا. احجز عرضًا تجريبيًا لتراه وفق طريقة عمل عيادتك.",
       plans: {
         essential: {
           name: "الأساسية",
@@ -197,7 +202,7 @@ export const PRODUCT_COPY = {
         },
       },
       faq: [
-        { q: "كم سعر MolarBear؟", a: "ثلاث باقات سنوية: الأساسية بـ 15,000 جنيه، والاحترافية بـ 22,000 جنيه، والعيادة بـ 38,000 جنيه سنويًا." },
+        { q: "كم سعر MolarBear؟", a: "ثلاث باقات والدفع سنويًا: الأساسية بـ 1,250 جنيه شهريًا (15,000 جنيه سنويًا)، والاحترافية بـ 1,833 جنيه شهريًا (22,000 جنيه سنويًا)، والعيادة بـ 3,167 جنيه شهريًا (38,000 جنيه سنويًا)." },
         { q: "هل يعمل مع جهاز الأشعة لدي؟", a: "يستورد MolarBear الأشعة مباشرة من برنامج NanoPix. تواصل معنا بخصوص الأجهزة الأخرى." },
         { q: "هل يمكن أن يعمل الاستقبال والطبيب على جهازين مختلفين؟", a: "نعم. لوحة سير العيادة مشتركة، فيرى الجهازان المرضى أنفسهم لحظيًا." },
         { q: "هل البرنامج بالعربية؟", a: "نعم. يعمل MolarBear بالعربية والإنجليزية، والأسعار بالجنيه المصري." },

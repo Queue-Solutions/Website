@@ -183,7 +183,7 @@ export const COMPANY_FAQ = {
     },
     {
       q: "Do you sell ready-made software?",
-      a: "Yes. Queue POS is a restaurant and café management system for a one-time EGP 20,000 with no monthly fees. MolarBear is dental clinic software with plans from EGP 15,000 per year. Both run on Windows in Arabic and English.",
+      a: "Yes. Queue POS is a restaurant and café management system for a one-time EGP 20,000 with no monthly fees. MolarBear is dental clinic software with plans from EGP 1,250 a month, billed yearly. Both run on Windows in Arabic and English.",
     },
     {
       q: "How much does a custom project cost?",
@@ -213,7 +213,7 @@ export const COMPANY_FAQ = {
     },
     {
       q: "هل لديكم برامج جاهزة؟",
-      a: "نعم. Queue POS نظام لإدارة المطاعم والكافيهات بسعر 20,000 جنيه مرة واحدة دون اشتراك شهري، وMolarBear برنامج لإدارة عيادات الأسنان بباقات تبدأ من 15,000 جنيه سنويًا. يعمل كلاهما على ويندوز بالعربية والإنجليزية.",
+      a: "نعم. Queue POS نظام لإدارة المطاعم والكافيهات بسعر 20,000 جنيه مرة واحدة دون اشتراك شهري، وMolarBear برنامج لإدارة عيادات الأسنان بباقات تبدأ من 1,250 جنيه شهريًا والدفع سنويًا. يعمل كلاهما على ويندوز بالعربية والإنجليزية.",
     },
     {
       q: "كم تكلفة المشروع المخصص؟",

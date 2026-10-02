@@ -1,13 +1,38 @@
+import { useState } from "react";
 import { FaCheck, FaStar } from "react-icons/fa";
 import { trackLeadClick } from "../../lib/analytics";
-import { PRICING } from "../../content/products";
+import { monthlyPrice, PRICING } from "../../content/products";
 import { formatPrice } from "../../lib/format";
 
 export default function PricingPlans({ accent, copy, locale, productId, productTitle, setShowForm, ui }) {
   const plans = PRICING[productId];
   const single = plans.length === 1;
+  const yearlyPlans = plans.some((plan) => plan.period === "year");
+  const [billing, setBilling] = useState("monthly");
+  const showMonthly = yearlyPlans && billing === "monthly";
 
   return (
+    <div>
+      {yearlyPlans ? (
+        <div className="mb-10 flex flex-col items-center gap-2">
+          <div role="tablist" className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+            {["monthly", "yearly"].map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="tab"
+                aria-selected={billing === option}
+                onClick={() => setBilling(option)}
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${billing === option ? "text-white" : "text-slate-600 hover:text-slate-900"}`}
+                style={billing === option ? { backgroundColor: accent } : undefined}
+              >
+                {ui.pricing[option]}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500">{ui.pricing.billingNote}</p>
+        </div>
+      ) : null}
     <div className={`mx-auto grid gap-5 ${single ? "max-w-md" : "max-w-5xl md:grid-cols-3"}`}>
       {plans.map((plan) => {
         const planCopy = copy.plans[plan.id];
@@ -35,9 +60,20 @@ export default function PricingPlans({ accent, copy, locale, productId, productT
 
             <div className="mt-5 flex items-baseline gap-2">
               <span className="text-sm font-semibold text-slate-500">{ui.pricing.currency}</span>
-              <span className="text-4xl font-bold tracking-tight text-slate-950">{formatPrice(plan.price, locale)}</span>
-              <span className="text-sm font-medium text-slate-500">{plan.period === "year" ? ui.pricing.perYear : ui.pricing.oneTime}</span>
+              <span className="text-4xl font-bold tracking-tight text-slate-950">
+                {formatPrice(showMonthly ? monthlyPrice(plan) : plan.price, locale)}
+              </span>
+              <span className="text-sm font-medium text-slate-500">
+                {plan.period !== "year" ? ui.pricing.oneTime : showMonthly ? ui.pricing.perMonth : ui.pricing.perYear}
+              </span>
             </div>
+            {plan.period === "year" ? (
+              <p className="mt-1.5 text-xs font-medium text-slate-500">
+                {showMonthly
+                  ? ui.pricing.billedYearly.replace("{price}", formatPrice(plan.price, locale))
+                  : ui.pricing.aboutMonthly.replace("{price}", formatPrice(monthlyPrice(plan), locale))}
+              </p>
+            ) : null}
 
             <ul className="mt-6 flex-1 space-y-2.5 border-t border-slate-100 pt-5">
               {planCopy.features.map((feature) => (
@@ -64,6 +100,7 @@ export default function PricingPlans({ accent, copy, locale, productId, productT
           </div>
         );
       })}
+    </div>
     </div>
   );
 }

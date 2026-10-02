@@ -10,7 +10,7 @@ import ProjectLogoStage from "../components/ui/ProjectLogoStage";
 import Testimonials from "../components/ui/Testimonials";
 import Reveal from "../components/ui/Reveal";
 import { COMPANY_FAQ, FAQ_TITLE } from "../content/company";
-import { PRICING } from "../content/products";
+import { monthlyPrice, PRICING } from "../content/products";
 import { TRIAL_COPY } from "../content/trial";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
@@ -151,8 +151,8 @@ export default function Home({ content, navTo, setShowForm }) {
           <div className="grid gap-6 md:grid-cols-2">
             {products.map((project, index) => {
               const plans = PRICING[project.id];
-              const lowest = Math.min(...plans.map((plan) => plan.price));
               const yearly = plans[0].period === "year";
+              const lowest = Math.min(...plans.map((plan) => (yearly ? monthlyPrice(plan) : plan.price)));
 
               return (
                 <Reveal key={project.id} delay={index * 0.05} className="h-full">
@@ -164,12 +164,13 @@ export default function Home({ content, navTo, setShowForm }) {
                       </p>
                       <h3 className="mt-2 text-2xl font-bold text-slate-950">{project.title}</h3>
                       <p className="mt-3 flex-1 text-[15px] leading-7 text-slate-600">{project.summary}</p>
-                      <div className="mt-5 flex items-baseline gap-2 border-t border-slate-100 pt-5">
+                      <div className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1 border-t border-slate-100 pt-5">
                         <span className="text-sm font-medium text-slate-500">{yearly ? ui.pricing.from : ""}</span>
                         <span className="text-3xl font-bold text-slate-950">{formatPrice(lowest, locale)}</span>
                         <span className="text-sm font-semibold text-slate-500">
-                          {ui.pricing.currency} {yearly ? ui.pricing.perYear : `· ${ui.pricing.oneTime}`}
+                          {ui.pricing.currency} {yearly ? ui.pricing.perMonth : `· ${ui.pricing.oneTime}`}
                         </span>
+                        {yearly ? <span className="text-xs text-slate-400">· {ui.pricing.billingNote}</span> : null}
                       </div>
                       <div className="mt-5 grid grid-cols-2 gap-2">
                         <Link

@@ -8,7 +8,7 @@ import ProjectLogoStage from "../components/ui/ProjectLogoStage";
 import Reveal from "../components/ui/Reveal";
 import Testimonials from "../components/ui/Testimonials";
 import TrialBanner from "../components/ui/TrialBanner";
-import { PRICING } from "../content/products";
+import { monthlyPrice, PRICING } from "../content/products";
 import { getTestimonials } from "../content/testimonials";
 import { trackLeadClick } from "../lib/analytics";
 import { formatPrice } from "../lib/format";
@@ -23,7 +23,8 @@ export default function CaseStudy({ content, setShowForm, slug }) {
   const story = project.caseStudy;
   const testimonials = getTestimonials(locale, project.id);
   const plans = PRICING[project.id];
-  const startingPrice = plans ? Math.min(...plans.map((plan) => plan.price)) : null;
+  const yearlyPlans = plans?.[0].period === "year";
+  const startingPrice = plans ? Math.min(...plans.map((plan) => (yearlyPlans ? monthlyPrice(plan) : plan.price))) : null;
 
   const primaryAction = project.href ? (
     <a
@@ -76,7 +77,8 @@ export default function CaseStudy({ content, setShowForm, slug }) {
                     to={getPathForPageId("landing", locale, project.landing)}
                     className="inline-flex h-12 items-center justify-center rounded-full border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-900 transition hover:border-slate-400"
                   >
-                    {ui.pricing.from} {formatPrice(startingPrice, locale)} {ui.pricing.currency} · {ui.pricing.seePricing}
+                    {ui.pricing.from} {formatPrice(startingPrice, locale)} {ui.pricing.currency}
+                    {yearlyPlans ? ` ${ui.pricing.perMonth}` : ""} · {ui.pricing.seePricing}
                   </Link>
                 ) : null}
               </div>
