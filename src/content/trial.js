@@ -9,7 +9,7 @@
 export const TRIAL_DOWNLOAD = {
   url: "/downloads/MolarBear-Setup.exe",
   fileName: "MolarBear-Setup.exe",
-  version: "1.28.2",
+  version: "1.30.0",
   sizeMb: 42,
   days: 14,
 };
